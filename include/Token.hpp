@@ -5,6 +5,7 @@
 
 using namespace std;
 
+//TODO: it must need to have many paragraph/sentence/line/position (vector or linkedlist?)
 class Token{
 private:
     int paragraph;
