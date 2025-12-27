@@ -12,7 +12,15 @@ private:
     Node<T> *head;
 	int size;
 public:
+	//standard constructor, copy constructor, destructor
     LinkedList() : head(nullptr), size(0) {}
+	LinkedList(LinkedList<T> &other): head(nullptr), size(0){
+		Node<T> *current = other.getHead();
+		while(current){
+			insert(current->data);
+			current = current->next;
+		}
+	}
 	~LinkedList(){
 		clear();
 	}

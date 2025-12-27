@@ -27,6 +27,8 @@ public:
 	void insert(string &word, int paragraph, int sentence, int line, int position);
 	LinkedList<Token>& getBucket(int index);
 	int getTableSize();
+	int countTokens();
+	Token* toArray(int &outSize);
 };
 
 #endif

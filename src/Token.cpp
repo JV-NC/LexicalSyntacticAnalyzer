@@ -5,13 +5,7 @@ Token::Token(): text(""), frequency(0) {}
 
 Token::Token(string &t): text(t), frequency(0) {}
 
-Token::Token(Token &other): text(other.text), frequency(other.frequency){
-    Node<Occurrence> *current = other.occurrences.getHead();
-    while(current){
-        occurrences.insert(current->data);
-        current = current->next;
-    }
-}
+Token::Token(Token &other): text(other.text), frequency(other.frequency), occurrences(other.occurrences) {}
 
 void Token::addOccurrence(int p, int s, int l, int pos){
     Occurrence occ(p,s,l,pos);

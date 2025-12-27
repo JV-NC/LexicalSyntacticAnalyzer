@@ -31,3 +31,35 @@ LinkedList<Token>& HashTable::getBucket(int index){
 int HashTable::getTableSize(){
     return TABLE_SIZE;
 }
+
+int HashTable::countTokens(){
+    int count=0;
+
+    for(int i=0; i<TABLE_SIZE; i++){
+        int temp = table[i].getSize();
+        count += temp;
+    }
+
+    return count;
+}
+
+Token* HashTable::toArray(int &outSize){
+    outSize = countTokens();
+
+    if(outSize==0)
+        return nullptr;
+
+    Token *array = new Token[outSize];
+
+    int index = 0;
+
+    for(int i=0; i<TABLE_SIZE; i++){
+        Node<Token> *current = table[i].getHead();
+        while(current){
+            array[index++] = current->data;
+            current = current->next;
+        }
+    }
+
+    return array;
+}

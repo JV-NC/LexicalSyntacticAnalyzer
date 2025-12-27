@@ -3,8 +3,9 @@
 #include <chrono>
 
 using Clock = chrono::high_resolution_clock;
-
-// COMPARATORS
+//TODO: docstring and comment all .hpp .cpp files
+//TODO: implement Analyzer, TextReader, Sentence, Paragraph, Report, main
+//COMPARATORS
 static bool compareAlpha(Token &a, Token &b, SortMetrics &m){
     m.comparisons++;
     return a.getText() < b.getText();
