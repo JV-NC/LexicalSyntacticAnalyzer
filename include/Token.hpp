@@ -13,7 +13,9 @@ private:
     int frequency;
     LinkedList<Occurrence> occurrences;
 public:
-    Token(string &t);
+    Token(); //standard constructor
+    Token(string &t); //normal constructor
+    Token(Token &other); //copy constructor
     void addOccurrence(int p, int s, int l, int pos);
     string getText();
     int getFrequency();
