@@ -3,14 +3,15 @@
 
 #include <string>
 #include "LinkedList.hpp"
-#include "HashEntry.hpp"
+#include "Token.hpp"
+#include "Node.hpp"
 
 using namespace std;
 
 struct HashTable{
 private:
 	static const int TABLE_SIZE = 101;
-	LinkedList<HashEntry> *table;
+	LinkedList<Token> *table;
 	
 	int hashFunction(string &key){
 		int hash = 0;
@@ -20,37 +21,12 @@ private:
 	}
 
 public:
-	HashTable(){
-		table = new LinkedList<HashEntry>[TABLE_SIZE];
-	}
-	
-	~HashTable(){
-		delete[] table;
-	}
-	
-	void insert(string &word){
-		int index = hashFunction(word);
-		Node<HashEntry> current = table[index].getHead();
-		
-		while(current){
-			if(current->data.word == word){
-				current->data.frequency++;
-				return;
-			}
-			current = current->next;
-		}
-		
-		HashEntry entry(word);
-		table[index].insert(entry);
-	}
-	
-	LinkedList<HashEntry>& getBucket(int index){
-		return table[index];
-	}
-	
-	int getTableSize(){
-		return TABLE_SIZE;
-	}
+	HashTable();
+	~HashTable();
+
+	void insert(string &word, int paragraph, int sentence, int line, int position);
+	LinkedList<Token>& getBucket(int index);
+	int getTableSize();
 };
 
 #endif

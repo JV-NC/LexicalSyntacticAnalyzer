@@ -1,0 +1,33 @@
+#include "../include/HashTable.hpp"
+
+HashTable::HashTable(){
+    table = new LinkedList<Token>[TABLE_SIZE];
+}
+
+HashTable::~HashTable(){
+    delete[] table;
+}
+
+void HashTable::insert(string &word, int paragraph, int sentence, int line, int position){
+    int index = hashFunction(word);
+    Node<Token> *current = table[index].getHead();
+    
+    while(current){
+        if(current->data.getText() == word){
+            current->data.addOccurrence(paragraph, sentence, line, position);
+            return;
+        }
+        current = current->next;
+    }
+    
+    Token token(word);
+    table[index].insert(token);
+}
+
+LinkedList<Token>& HashTable::getBucket(int index){
+    return table[index];
+}
+
+int HashTable::getTableSize(){
+    return TABLE_SIZE;
+}
