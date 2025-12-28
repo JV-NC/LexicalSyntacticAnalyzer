@@ -1,8 +1,6 @@
 #ifndef SENTENCE_HPP
 #define SENTENCE_HPP
 
-using namespace std;
-
 class Sentence{
 private:
     int paragraphNumber;
@@ -11,7 +9,12 @@ private:
     int nonStopWords;
     double averageWordLength;
 public:
-    Sentence(int pN, int sN, int sWords, int nWords, int avrWordLength);
+    Sentence(int pN, int sN, int sWords, int nWords, double avrWordLength);
     
+    int getParagraphNumber();
+    int getSentenceNumber();
+    int getAllWords();
+    int getNormalWords();
+    double getAverageWordLength();
 };
 #endif

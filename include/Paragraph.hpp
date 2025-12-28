@@ -1,8 +1,6 @@
 #ifndef PARAGRAPH_HPP
 #define PARAGRAPH_HPP
 
-using namespace std;
-
 class Paragraph{
 private:
     int number;
@@ -11,5 +9,8 @@ private:
 public:
     Paragraph(int n, int sL, int tS);
     
+    int getNumber();
+    int getStartingLine();
+    int getTotalSentences();
 };
 #endif
