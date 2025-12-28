@@ -12,7 +12,7 @@ private:
     int currentLine;
 
 public:
-    TextReader(string &filename);
+    TextReader(const string &filename);
     ~TextReader();
 
     bool isOpen();

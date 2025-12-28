@@ -1,6 +1,6 @@
 #include "../include/TextReader.hpp"
 
-TextReader::TextReader(string &filename): currentLine(0){
+TextReader::TextReader(const string &filename): currentLine(0){
     file.open(filename.c_str());
 }
 TextReader::~TextReader(){

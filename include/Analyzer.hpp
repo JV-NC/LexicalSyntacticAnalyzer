@@ -14,14 +14,14 @@ private:
     LinkedList<Paragraph> paragraphs;
     LinkedList<string> stopWords;
 
-    void loadStopWords(string& filename);
+    void loadStopWords(const string &filename);
     bool isSentenceEnd(char c);
     bool isWordChar(char c);
     bool isStopWord(string &word);
     string normalizeWord(string &word);
 
 public:
-    Analyzer();
+    Analyzer(const string &stopWordsFilename);
 
     void analyze(TextReader &reader);
 

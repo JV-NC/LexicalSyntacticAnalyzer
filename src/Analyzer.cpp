@@ -2,9 +2,11 @@
 #include "cctype"
 #include <fstream>
 
-Analyzer::Analyzer() {}
+Analyzer::Analyzer(const string &stopWordsFilename){
+    loadStopWords(stopWordsFilename);
+}
 
-void Analyzer::loadStopWords(string& filename){
+void Analyzer::loadStopWords(const string &filename){
     ifstream file(filename.c_str());
     string word;
 
