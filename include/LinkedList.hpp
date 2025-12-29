@@ -14,7 +14,7 @@ private:
 public:
 	//standard constructor, copy constructor, destructor
     LinkedList() : head(nullptr), size(0) {}
-	LinkedList(LinkedList<T> &other): head(nullptr), size(0){
+	LinkedList(const LinkedList<T> &other): head(nullptr), size(0){
 		Node<T> *current = other.getHead();
 		while(current){
 			insert(current->data);
@@ -25,7 +25,7 @@ public:
 		clear();
 	}
 	
-	void insert(T &value){
+	void insert(const T &value){
 		Node<T> *newNode = new Node<T>(value);
 		
 		if(!head){
@@ -44,7 +44,7 @@ public:
 	int getSize(){
 		return size;
 	}
-	Node<T>* getHead(){
+	Node<T>* getHead() const{
 		return head;
 	}
 	void clear(){

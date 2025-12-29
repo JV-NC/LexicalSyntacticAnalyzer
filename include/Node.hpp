@@ -9,7 +9,7 @@ struct Node {
     Node<T>* next;
 	
 	//inline constructor
-    Node(T &value) : data(value), next(nullptr) {}
+    Node(const T &value) : data(value), next(nullptr) {}
 };
 
 #endif

@@ -16,7 +16,7 @@ private:
 
     void loadStopWords(const string &filename);
     bool isSentenceEnd(char c);
-    bool isWordChar(char c);
+    bool isWordChar(unsigned char c);
     bool isStopWord(string &word);
     string normalizeWord(string &word);
 

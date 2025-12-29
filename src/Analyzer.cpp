@@ -17,8 +17,10 @@ void Analyzer::loadStopWords(const string &filename){
 bool Analyzer::isSentenceEnd(char c){
     return c=='.' || c=='!' || c=='?';
 }
-bool Analyzer::isWordChar(char c){
-    return isalpha(c);
+bool Analyzer::isWordChar(unsigned char c){
+    return (c >= 'A' && c <= 'Z') ||
+           (c >= 'a' && c <= 'z') ||
+           c == 0xC3; //UTF-8 prefix
 }
 bool Analyzer::isStopWord(string &word){
     Node<string> *current = stopWords.getHead();
@@ -35,7 +37,7 @@ string Analyzer::normalizeWord(string &word){
     for(size_t i=0; i<word.size(); i++){
         unsigned char c = word[i];
 
-        if(c== 0x63 && i+1<word.size()){
+        if(c== 0xC3 && i+1<word.size()){
             unsigned char next = word[i+1];
 
             switch(next){
@@ -136,7 +138,6 @@ void Analyzer::analyze(TextReader &reader){
                     position=0;
                 }
             }
-            i++;
         }
     }
 

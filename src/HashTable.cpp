@@ -21,6 +21,7 @@ void HashTable::insert(string &word, int paragraph, int sentence, int line, int 
     }
     
     Token token(word);
+    token.addOccurrence(paragraph, sentence, line, position);
     table[index].insert(token);
 }
 
