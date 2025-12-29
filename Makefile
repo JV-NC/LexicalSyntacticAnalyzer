@@ -2,9 +2,9 @@
 # Sistema
 # ===============================
 ifeq ($(OS),Windows_NT)
-    TARGET = analisador.exe
+    TARGET = LSA.exe
 else
-    TARGET = analisador
+    TARGET = LSA
 endif
 
 # ===============================

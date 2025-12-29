@@ -19,8 +19,8 @@ bool Analyzer::isSentenceEnd(char c){
 }
 bool Analyzer::isWordChar(unsigned char c){
     return (c >= 'A' && c <= 'Z') ||
-           (c >= 'a' && c <= 'z') ||
-           c == 0xC3; //UTF-8 prefix
+        (c >= 'a' && c <= 'z') ||
+        c >= 128;
 }
 bool Analyzer::isStopWord(string &word){
     Node<string> *current = stopWords.getHead();
@@ -41,21 +41,33 @@ string Analyzer::normalizeWord(string &word){
             unsigned char next = word[i+1];
 
             switch(next){
+                //A
+                case 0x80: case 0x81: case 0x82: case 0x83:
                 case 0xA0: case 0xA1: case 0xA2: case 0xA3:
                     result+='a';
                 break;
+                //E
+                case 0x88: case 0x89:
                 case 0xA9: case 0xAA:
                     result+='e';
                 break;
+                //I
+                case 0x8D:
                 case 0xAD:
                     result+='i';
                 break;
+                // O
+                case 0x93: case 0x94: case 0x95:
                 case 0xB3: case 0xB4: case 0xB5:
                     result+='o';
                 break;
+                // U
+                case 0x9A:
                 case 0xBA:
                     result+='u';
                 break;
+                // C
+                case 0x87:
                 case 0xA7:
                     result+='c';
                 break;
@@ -88,13 +100,13 @@ void Analyzer::analyze(TextReader &reader){
             continue;
         }
 
-        int i = 0, stopWords = 0, nonStopWords = 0, totalWordLength = 0, position = 0;
+        int stopWords = 0, nonStopWords = 0, totalWordLength = 0, position = 0;
         string word;
 
         for(size_t i=0; i<=line.size(); i++){
             unsigned char c = (i< line.size()) ? line[i]: ' ';
 
-            if(isWordChar(c) || c==0xC3){
+            if(isWordChar(c)){
                 word+=c;
             }else{
                 if(!word.empty()){
