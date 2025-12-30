@@ -11,7 +11,7 @@ endif
 # Compilador
 # ===============================
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude
+CXXFLAGS = -std=c++17 -Wall -Wextra -g -Iinclude
 
 # ===============================
 # Diretórios

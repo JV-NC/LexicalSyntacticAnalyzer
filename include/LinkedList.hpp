@@ -24,6 +24,17 @@ public:
 	~LinkedList(){
 		clear();
 	}
+	LinkedList<T>& operator=(const LinkedList& other){
+    if(this != &other){
+        clear();
+        Node<T>* current = other.head;
+        while(current){
+            insert(current->data);
+            current = current->next;
+        }
+    }
+    return *this;
+}
 	
 	void insert(const T &value){
 		Node<T> *newNode = new Node<T>(value);

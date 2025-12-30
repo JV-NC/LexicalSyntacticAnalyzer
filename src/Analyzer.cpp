@@ -248,6 +248,12 @@ HashTable<Token>& Analyzer::getTokens(){
 LinkedList<HashTable<Token>>& Analyzer::getSentenceTokens(){
     return sentenceTokens;
 }
+HashTable<Expression>& Analyzer::getAllExpressions(){
+    return allExpressions;
+}
+LinkedList<HashTable<Expression>>& Analyzer::getParagraphExpressions(){
+    return paragraphExpressions;
+}
 LinkedList<Sentence>& Analyzer::getSentences(){
     return sentences;
 }

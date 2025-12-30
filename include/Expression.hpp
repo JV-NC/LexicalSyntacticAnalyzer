@@ -16,6 +16,7 @@ public:
     Expression(); //standard constructor
     Expression(const string &t); //normal constructor
     Expression(const Expression &other); //copy constructor
+    Expression& operator=(const Expression& other);
 
     void addOccurrence(int line);
 
