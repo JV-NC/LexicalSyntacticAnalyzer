@@ -29,6 +29,7 @@ public:
 	int getTableSize();
 	int countTokens();
 	Token* toArray(int &outSize);
+	void clear();
 };
 
 #endif

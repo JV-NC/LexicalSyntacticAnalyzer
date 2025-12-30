@@ -10,6 +10,7 @@
 class Analyzer{
 private:
     HashTable tokens;
+    LinkedList<HashTable> sentenceTokens;
     LinkedList<Sentence> sentences;
     LinkedList<Paragraph> paragraphs;
     LinkedList<string> stopWords;
@@ -26,6 +27,7 @@ public:
     void analyze(TextReader &reader);
 
     HashTable& getTokens();
+    LinkedList<HashTable>& getSentenceTokens();
     LinkedList<Sentence>& getSentences();
     LinkedList<Paragraph>& getParagraphs();
 };

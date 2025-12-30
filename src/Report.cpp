@@ -1,6 +1,8 @@
 #include "../include/Report.hpp"
 #include <iomanip>
-
+//TODO: implement partial results, and paragraph/sentence stats
+//TODO: implement stack for pontuation.
+//TODO: expressions
 Report::Report(Analyzer &a, ostream &output): analyzer(a), out(output) {}
 
 void Report::printLine(char c, int n){

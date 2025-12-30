@@ -64,3 +64,9 @@ Token* HashTable::toArray(int &outSize){
 
     return array;
 }
+
+void HashTable::clear(){
+    for(int i=0; i<TABLE_SIZE; i++){
+        table[i].clear();
+    }
+}

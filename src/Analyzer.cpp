@@ -85,6 +85,7 @@ string Analyzer::normalizeWord(string &word){
 
 void Analyzer::analyze(TextReader &reader){
     int paragraphNumber = 1, sentenceNumber = 0, startingLine = 1;
+    HashTable current;
 
     while(reader.hasNextLine()){
         string line = reader.nextLine();
@@ -115,6 +116,13 @@ void Analyzer::analyze(TextReader &reader){
                         position++;
 
                         if(!isStopWord(word)){
+                            current.insert(
+                                word,
+                                paragraphNumber,
+                                sentenceNumber+1,
+                                reader.getCurrentLine(),
+                                position
+                            );
                             tokens.insert(
                                 word,
                                 paragraphNumber,
@@ -144,6 +152,7 @@ void Analyzer::analyze(TextReader &reader){
                         Sentence(paragraphNumber, sentenceNumber, stopWords, nonStopWords, avg)
                     );
 
+                    current.clear();
                     stopWords=0;
                     nonStopWords=0;
                     totalWordLength=0;
@@ -160,6 +169,9 @@ void Analyzer::analyze(TextReader &reader){
 
 HashTable& Analyzer::getTokens(){
     return tokens;
+}
+LinkedList<HashTable>& Analyzer::getSentenceTokens(){
+    return sentenceTokens;
 }
 LinkedList<Sentence>& Analyzer::getSentences(){
     return sentences;
