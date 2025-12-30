@@ -23,7 +23,7 @@ void Report::printParagraphPartial(int paragraphNumber){
 
 }
 void Report::printFullResult(){
-    HashTable &hash = analyzer.getTokens();
+    HashTable<Token> &hash = analyzer.getTokens();
     int tableSize = hash.getTableSize();
 
     out<<left<<setw(20)<<"WORD"<<setw(12)<<"FREQUENCY"<<setw(15)<<"PARAGRAPH"<<setw(15)<<"SENTENCE"<<setw(15)<<"LINE"<<setw(15)<<"POSITIONS\n";

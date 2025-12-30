@@ -2,8 +2,9 @@
 #include "cctype"
 #include <fstream>
 
-Analyzer::Analyzer(const string &stopWordsFilename){
+Analyzer::Analyzer(const string &stopWordsFilename, const string &expressionsFilename){
     loadStopWords(stopWordsFilename);
+    loadExpressions(expressionsFilename);
 }
 
 void Analyzer::loadStopWords(const string &filename){
@@ -12,6 +13,16 @@ void Analyzer::loadStopWords(const string &filename){
 
     while(file>>word){
         stopWords.insert(normalizeWord(word));
+    }
+}
+void Analyzer::loadExpressions(const string &filename){
+    ifstream file(filename.c_str());
+    string line;
+
+    while(getline(file, line)){
+        if(!line.empty()){
+            expressions.insert(normalizeWord(line));
+        }
     }
 }
 bool Analyzer::isSentenceEnd(char c){
@@ -31,11 +42,32 @@ bool Analyzer::isStopWord(string &word){
     }
     return false;
 }
-string Analyzer::normalizeWord(string &word){
+void Analyzer::checkExpressions(const string &line, int lineNumber, HashTable<Expression> &currentExpressions){
+    Node<string> *expNode = expressions.getHead();
+
+    while(expNode){
+        const string &exp = expNode->data;
+
+        size_t pos = line.find(exp);
+        while(pos!=string::npos){
+            currentExpressions.insert(exp,lineNumber);
+            allExpressions.insert(exp,lineNumber);
+
+            pos = line.find(exp,pos+exp.length());
+        }
+
+        expNode = expNode->next;
+    }
+}
+string Analyzer::normalizeWord(const string &word){
     string result;
 
     for(size_t i=0; i<word.size(); i++){
         unsigned char c = word[i];
+
+        if(c=='-'){
+            result+='-';
+        }
 
         if(c== 0xC3 && i+1<word.size()){
             unsigned char next = word[i+1];
@@ -83,18 +115,57 @@ string Analyzer::normalizeWord(string &word){
     return result;
 }
 
+string Analyzer::normalizeLine(const string &line){
+    string result;
+    for(size_t i = 0; i < line.size(); i++){
+        unsigned char c = line[i];
+
+        if(c == 0xC3 && i + 1 < line.size()){
+            unsigned char next = line[i + 1];
+            switch(next){
+                case 0xA0: case 0xA1: case 0xA2: case 0xA3:
+                case 0x80: case 0x81: case 0x82: case 0x83:
+                    result += 'a'; break;
+                case 0xA9: case 0xAA: case 0x88: case 0x89:
+                    result += 'e'; break;
+                case 0xAD: case 0x8D:
+                    result += 'i'; break;
+                case 0xB3: case 0xB4: case 0xB5:
+                case 0x93: case 0x94: case 0x95:
+                    result += 'o'; break;
+                case 0xBA: case 0x9A:
+                    result += 'u'; break;
+                case 0xA7: case 0x87:
+                    result += 'c'; break;
+                default: break;
+            }
+            i++;
+        }
+        else{
+            result += tolower(c);
+        }
+    }
+    return result;
+}
+
 void Analyzer::analyze(TextReader &reader){
     int paragraphNumber = 1, sentenceNumber = 0, startingLine = 1;
-    HashTable current;
+    HashTable<Token> currentTokens;
+    HashTable<Expression> currentExpressions;
 
     while(reader.hasNextLine()){
         string line = reader.nextLine();
+
+        string normalizedLine = normalizeWord(line);
+        checkExpressions(normalizedLine, reader.getCurrentLine(), currentExpressions);
 
         if(line.empty()){
             paragraphs.insert(
                 Paragraph(paragraphNumber, startingLine, sentenceNumber)
             );
-
+            
+            paragraphExpressions.insert(currentExpressions);
+            currentExpressions.clear();
             paragraphNumber++;
             sentenceNumber = 0;
             startingLine = reader.getCurrentLine()+1;
@@ -109,6 +180,8 @@ void Analyzer::analyze(TextReader &reader){
 
             if(isWordChar(c)){
                 word+=c;
+            }else if(c=='-' && !word.empty() && i+1<line.size() && isWordChar(line[i+1])){ //compound word
+                word+=c;
             }else{
                 if(!word.empty()){
                     word = normalizeWord(word);
@@ -116,7 +189,7 @@ void Analyzer::analyze(TextReader &reader){
                         position++;
 
                         if(!isStopWord(word)){
-                            current.insert(
+                            currentTokens.insert(
                                 word,
                                 paragraphNumber,
                                 sentenceNumber+1,
@@ -151,8 +224,9 @@ void Analyzer::analyze(TextReader &reader){
                     sentences.insert(
                         Sentence(paragraphNumber, sentenceNumber, stopWords, nonStopWords, avg)
                     );
-
-                    current.clear();
+                    
+                    sentenceTokens.insert(currentTokens);
+                    currentTokens.clear();
                     stopWords=0;
                     nonStopWords=0;
                     totalWordLength=0;
@@ -165,12 +239,13 @@ void Analyzer::analyze(TextReader &reader){
     paragraphs.insert(
         Paragraph(paragraphNumber, startingLine, sentenceNumber)
     );
+    paragraphExpressions.insert(currentExpressions);
 }
 
-HashTable& Analyzer::getTokens(){
+HashTable<Token>& Analyzer::getTokens(){
     return tokens;
 }
-LinkedList<HashTable>& Analyzer::getSentenceTokens(){
+LinkedList<HashTable<Token>>& Analyzer::getSentenceTokens(){
     return sentenceTokens;
 }
 LinkedList<Sentence>& Analyzer::getSentences(){

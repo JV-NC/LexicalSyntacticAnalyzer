@@ -13,7 +13,7 @@ int main(){
         return 1;
     }
 
-    Analyzer analyzer("data/stopwords.txt");
+    Analyzer analyzer("data/stopwords.txt", "data/expressoes.txt");
 
     analyzer.analyze(reader);
 
