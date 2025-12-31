@@ -3,7 +3,6 @@
 
 #include <ostream>
 #include "Analyzer.hpp"
-#include "Token.hpp"
 
 class Report{
 private:

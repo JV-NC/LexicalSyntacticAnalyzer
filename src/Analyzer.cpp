@@ -1,7 +1,7 @@
 #include "../include/Analyzer.hpp"
 #include "cctype"
 #include <fstream>
-
+//TODO: implement utf8 to ascii method
 Analyzer::Analyzer(const string &stopWordsFilename, const string &expressionsFilename){
     loadStopWords(stopWordsFilename);
     loadExpressions(expressionsFilename);

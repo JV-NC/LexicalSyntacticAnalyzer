@@ -8,7 +8,7 @@ template <typename T>
 class Queue{
 private:
     Node<T> *front;
-	Node<T> *rear;[
+	Node<T> *rear;
 	int size;
 public:
 	Queue(): front(nullptr), rear(nullptr), size(0) {}
