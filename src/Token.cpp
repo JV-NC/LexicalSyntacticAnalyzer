@@ -7,6 +7,15 @@ Token::Token(const string &t): text(t), frequency(0) {}
 
 Token::Token(const Token &other): text(other.text), frequency(other.frequency), occurrences(other.occurrences) {}
 
+Token& Token::operator=(const Token &other){
+    if(this!=&other){
+        text = other.text;
+        frequency = other.frequency;
+        occurrences = other.occurrences;
+    }
+    return *this;
+}
+
 void Token::addOccurrence(int p, int s, int l, int pos){
     Occurrence occ(p,s,l,pos);
     occurrences.insert(occ);

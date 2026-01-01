@@ -7,6 +7,7 @@ private:
     int startingLine;
     int totalSentences;
 public:
+    Paragraph();
     Paragraph(int n, int sL, int tS);
     
     int getNumber();

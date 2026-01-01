@@ -6,6 +6,7 @@
 #include "Sentence.hpp"
 #include "Paragraph.hpp"
 #include "LinkedList.hpp"
+#include "Queue.hpp"
 #include "Token.hpp"
 #include "Expression.hpp"
 
@@ -17,8 +18,8 @@ private:
     HashTable<Expression> allExpressions;
     LinkedList<HashTable<Expression>> paragraphExpressions;
 
-    LinkedList<Sentence> sentences;
-    LinkedList<Paragraph> paragraphs;
+    Queue<Sentence> sentences;
+    Queue<Paragraph> paragraphs;
 
     LinkedList<string> stopWords;
     LinkedList<string> expressions;
@@ -41,8 +42,8 @@ public:
     LinkedList<HashTable<Token>>& getSentenceTokens();
     HashTable<Expression>& getAllExpressions();
     LinkedList<HashTable<Expression>>& getParagraphExpressions();
-    LinkedList<Sentence>& getSentences();
-    LinkedList<Paragraph>& getParagraphs();
+    Queue<Sentence>& getSentences();
+    Queue<Paragraph>& getParagraphs();
 };
 
 #endif

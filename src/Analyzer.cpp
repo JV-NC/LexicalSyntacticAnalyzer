@@ -2,6 +2,7 @@
 #include "cctype"
 #include <fstream>
 //TODO: implement utf8 to ascii method
+//TODO: correct empty paragraphs that do not have sentence
 Analyzer::Analyzer(const string &stopWordsFilename, const string &expressionsFilename){
     loadStopWords(stopWordsFilename);
     loadExpressions(expressionsFilename);
@@ -34,19 +35,15 @@ bool Analyzer::isWordChar(unsigned char c){
         c >= 128;
 }
 bool Analyzer::isStopWord(string &word){
-    Node<string> *current = stopWords.getHead();
-    while(current){
-        if(current->data == word)
+    for(LinkedList<string>::Iterator it=stopWords.begin(); it!=stopWords.end(); it++){
+        if(*it == word)
             return true;
-        current = current->next;
     }
     return false;
 }
 void Analyzer::checkExpressions(const string &line, int lineNumber, HashTable<Expression> &currentExpressions){
-    Node<string> *expNode = expressions.getHead();
-
-    while(expNode){
-        const string &exp = expNode->data;
+    for(LinkedList<string>::Iterator it=expressions.begin(); it!=expressions.end(); it++){
+        const string &exp = *it;
 
         size_t pos = line.find(exp);
         while(pos!=string::npos){
@@ -55,8 +52,6 @@ void Analyzer::checkExpressions(const string &line, int lineNumber, HashTable<Ex
 
             pos = line.find(exp,pos+exp.length());
         }
-
-        expNode = expNode->next;
     }
 }
 string Analyzer::normalizeWord(const string &word){
@@ -156,11 +151,11 @@ void Analyzer::analyze(TextReader &reader){
     while(reader.hasNextLine()){
         string line = reader.nextLine();
 
-        string normalizedLine = normalizeWord(line);
+        string normalizedLine = normalizeLine(line);
         checkExpressions(normalizedLine, reader.getCurrentLine(), currentExpressions);
 
         if(line.empty()){
-            paragraphs.insert(
+            paragraphs.enqueue(
                 Paragraph(paragraphNumber, startingLine, sentenceNumber)
             );
             
@@ -221,7 +216,7 @@ void Analyzer::analyze(TextReader &reader){
                         ? static_cast<double>(totalWordLength)/nonStopWords
                         : 0.0;
 
-                    sentences.insert(
+                    sentences.enqueue(
                         Sentence(paragraphNumber, sentenceNumber, stopWords, nonStopWords, avg)
                     );
                     
@@ -236,7 +231,7 @@ void Analyzer::analyze(TextReader &reader){
         }
     }
 
-    paragraphs.insert(
+    paragraphs.enqueue(
         Paragraph(paragraphNumber, startingLine, sentenceNumber)
     );
     paragraphExpressions.insert(currentExpressions);
@@ -254,9 +249,9 @@ HashTable<Expression>& Analyzer::getAllExpressions(){
 LinkedList<HashTable<Expression>>& Analyzer::getParagraphExpressions(){
     return paragraphExpressions;
 }
-LinkedList<Sentence>& Analyzer::getSentences(){
+Queue<Sentence>& Analyzer::getSentences(){
     return sentences;
 }
-LinkedList<Paragraph>& Analyzer::getParagraphs(){
+Queue<Paragraph>& Analyzer::getParagraphs(){
     return paragraphs;
 }

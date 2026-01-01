@@ -35,14 +35,12 @@ public:
 
 	void insert(const string &key, int paragraph, int sentence, int line, int position){
 		int index = hashFunction(key);
-		Node<T> *current = table[index].getHead();
 		
-		while(current){
-			if(current->data.getText() == key){
-				current->data.addOccurrence(paragraph, sentence, line, position);
+		for(auto it=table[index].begin(); it!=table[index].end(); it++){
+			if((*it).getText() == key){
+				(*it).addOccurrence(paragraph, sentence, line, position);
 				return;
 			}
-			current = current->next;
 		}
 		
 		T obj(key);
@@ -51,14 +49,12 @@ public:
 	}
 	void insert(const string &key, int line){
 		int index = hashFunction(key);
-		Node<T> *current = table[index].getHead();
 
-		while(current){
-			if(current->data.getText() == key){
-				current->data.addOccurrence(line);
+		for(auto it=table[index].begin(); it!=table[index].end(); it++){
+			if((*it).getText() == key){
+				(*it).addOccurrence(line);
 				return;
 			}
-			current = current->next;
 		}
 
 		T obj(key);
@@ -92,11 +88,9 @@ public:
 		int index = 0;
 
 		for(int i=0; i<TABLE_SIZE; i++){
-			Node<T> *current = table[i].getHead();
-			while(current){
-				array[index++] = current->data;
-				current = current->next;
-			}
+			for (auto it = table[i].begin(); it != table[i].end(); ++it) {
+                array[index++] = *it;
+            }
 		}
 
 		return array;

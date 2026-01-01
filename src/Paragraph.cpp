@@ -1,5 +1,6 @@
 #include "../include/Paragraph.hpp"
 
+Paragraph::Paragraph(): number(0), startingLine(0), totalSentences(0) {}
 Paragraph::Paragraph(int n, int sL, int tS):
     number(n),
     startingLine(sL),

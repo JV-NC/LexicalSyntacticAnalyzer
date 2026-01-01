@@ -16,6 +16,7 @@ public:
     Token(); //standard constructor
     Token(const string &t); //normal constructor
     Token(const Token &other); //copy constructor
+    Token& operator=(const Token &other);
     void addOccurrence(int p, int s, int l, int pos);
     string getText();
     int getFrequency();

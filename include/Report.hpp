@@ -13,7 +13,7 @@ private:
     void printTitle(const string &title);
 
     void printPartialResult();
-    void printParagraphPartial(int paragraphNumber);
+    void printParagraphPartial(int i, Paragraph p);
     void printFullResult();
 
     void printSentenceStats();

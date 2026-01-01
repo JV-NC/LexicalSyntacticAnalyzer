@@ -2,10 +2,8 @@
 #include <iomanip>
 //TODO: implement partial results, and paragraph/sentence stats
 //TODO: implement stack for pontuation.
-//TODO: refactor Queue for sentences in Analyzer
 //TODO: expressions
 //TODO: refactor printParagraphPartial for Paragraph parameter
-//TODO: implement get(i) method for LinkedList
 Report::Report(Analyzer &a, ostream &output): analyzer(a), out(output) {}
 
 void Report::printLine(char c, int n){
@@ -20,16 +18,27 @@ void Report::printTitle(const string &title){
 }
 
 void Report::printPartialResult(){
-    Node<Paragraph> *p = analyzer.getParagraphs().getHead();
+    Queue<Paragraph> q = analyzer.getParagraphs();
+    Paragraph p;
     int paragraphNumber = 1;
     
-    while(p){
-        printParagraphPartial(paragraphNumber);
+    while(!q.isEmpty()){
+        q.dequeue(p);
+        printParagraphPartial(paragraphNumber, p);
         paragraphNumber++;
-        p = p->next;
     }
 }
-void Report::printParagraphPartial(int paragraphNumber){
+void Report::printParagraphPartial(int i, Paragraph p){
+    out<<"Paragraph "<<i<<" : "<<p.getNumber()<<" , "<<p.getStartingLine()<<" , "<<p.getTotalSentences()<<endl;
+    Queue<Sentence> q = analyzer.getSentences();
+    Sentence s;
+    int j=1;
+    for(j=0;j<p.getTotalSentences();j++){
+        if(!q.dequeue(s)){
+            out<<"Failure on dequeuing sentences";
+        }
+        out<<"Sentence "<<j+1<<" : "<<s.getAllWords()<<" , "<<s.getAverageWordLength()<<" , "<<s.getNormalWords()<<" , "<<s.getParagraphNumber()<<" , "<<s.getSentenceNumber()<<endl;
+    }
     // static Node<Sentence> *sentenceNode = analyzer.getSentences().getHead();
     // static Node<HashTable<Token>> *tokenNode = analyzer.getSentenceTokens().getHead();
     // static Node<HashTable<Expression>> *exprNode = analyzer.getParagraphExpressions().getHead();
@@ -146,19 +155,16 @@ void Report::printFullResult(){
 
     for(int i=0; i<tableSize; i++){
         LinkedList<Token> &bucket = hash.getBucket(i);
-        Node<Token> *node = bucket.getHead();
 
-        while(node){
-            Token &token = node->data;
+        for(LinkedList<Token>::Iterator itTokens=bucket.begin(); itTokens!=bucket.end(); itTokens++){
+            Token &token = *itTokens;
 
             out<<left<<setw(20)<<token.getText()<<setw(12)<<token.getFrequency();
 
-            Node<Occurrence> *occNode = token.getOccurrences().getHead();
-
             bool first = true;
 
-            while(occNode){
-                Occurrence &occ = occNode->data;
+            for(LinkedList<Occurrence>::Iterator itOcc=token.getOccurrences().begin(); itOcc!=token.getOccurrences().end(); itOcc++){
+                Occurrence &occ = *itOcc;
 
                 if(!first){
                     out<<setw(20)<<" "<<setw(12)<<" ";
@@ -168,11 +174,9 @@ void Report::printFullResult(){
                 out<<setw(15)<<occ.paragraph<<setw(15)<<occ.sentence<<setw(15)<<occ.line<<setw(15)<<occ.position<<endl;
 
                 first = false;
-                occNode = occNode->next;
             }
 
             printLine('-',150);
-            node = node->next;
         }
     }
 }

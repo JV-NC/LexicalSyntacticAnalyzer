@@ -12,12 +12,30 @@ private:
 	int size;
 public:
 	Queue(): front(nullptr), rear(nullptr), size(0) {}
+	Queue(const Queue<T> &other): front(nullptr), rear(nullptr), size(0){
+		Node<T> *current = other.front;
+		while(current){
+			enqueue(current->data);
+			current = current->next;
+		}
+	}
 	~Queue(){
 		clear();
 	}
+	Queue<T>& operator=(const Queue<T> &other){
+		if(this!= &other){
+			clear();
+			Node<T> *current = other.front;
+			while(current){
+				enqueue(current->data);
+				current = current->next;
+			}
+		}
+		return *this;
+	}
 	
-	void enqueue(T &value){
-		Node<T> newNode = new Node<T>(value);
+	void enqueue(const T &value){
+		Node<T> *newNode = new Node<T>(value);
 		
 		if(isEmpty()){
 			front = rear = newNode;
