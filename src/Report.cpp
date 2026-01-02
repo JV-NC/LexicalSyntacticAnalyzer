@@ -11,9 +11,12 @@ void Report::printLine(char c, int n){
     out<<'\n';
 }
 void Report::printTitle(const string &title){
-    printLine('=',150);
-    out<<"=>"<<setw(120)<<right<<title<<'\n';
-    printLine('=',150);
+    const int width = 150;
+    printLine('=',width);
+    int titleLen = title.size(); //"=> "
+    int leftPadding = (width - titleLen) / 2;
+    out<<"=>"<<string(leftPadding, ' ')<<title<<endl<<endl;
+    printLine('=',width);
 }
 
 void Report::printPartialResult(){
@@ -21,12 +24,10 @@ void Report::printPartialResult(){
     Queue<Sentence> sq = analyzer.getSentences();
     LinkedList<HashTable<Token>>::Iterator it = analyzer.getSentenceTokens().begin();
     Paragraph p;
-    int paragraphNumber = 1;
     
     while(!pq.isEmpty()){
         pq.dequeue(p);
         printParagraphPartial(p, sq, it);
-        paragraphNumber++;
     }
 }
 void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<HashTable<Token>>::Iterator &tokenIt){
@@ -39,7 +40,7 @@ void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<
 
         printLine('_',150);
 
-        out<<left<<setw(25)<<"WORD"<<setw(15)<<"PARAGRAPH"<<setw(15)<<"SENTENCE"<<setw(15)<<"LINE"<<setw(15)<<"FREQUENCY"<<"POSITIONS\n";
+        out<<left<<setw(25)<<"WORD"<<setw(15)<<"FREQUENCY"<<setw(15)<<"PARAGRAPH"<<setw(15)<<"SENTENCE"<<setw(15)<<"LINE"<<"POSITIONS\n";
 
         printLine('-',150);
 
@@ -49,37 +50,36 @@ void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<
             for(LinkedList<Token>::Iterator it=bucket.begin(); it!= bucket.end(); it++){
                 Token &token = *it;
 
-                out<<left<<setw(25)<<token.getText()<<setw(15)<<sent.getParagraphNumber()<<setw(15)<<sent.getSentenceNumber();
+                out<<left<<setw(25)<<token.getText()<<setw(15)<<token.getFrequency()<<setw(15)<<sent.getParagraphNumber()<<setw(15)<<sent.getSentenceNumber();
 
-                bool first = true;
-                LinkedList<Occurrence> &occList = token.getOccurrences();
-                for(LinkedList<Occurrence>::Iterator occIt=occList.begin(); occIt!=occList.end(); occIt++){
+                string lines;
+                string positions;
+
+                for(LinkedList<Occurrence>::Iterator occIt=token.getOccurrences().begin(); occIt!=token.getOccurrences().end(); occIt++){
                     Occurrence occ = *occIt;
-                    if(!first){
-                        out<<setw(25)<<" "<<setw(15)<<" "<<setw(15)<<" ";
-                    }
-                    out<<setw(15)<<occ.line<<setw(15)<<token.getFrequency()<<setw(15)<<occ.position<<endl;
-                    
-                    first = false;
+                    lines += to_string(occ.line)+" ";
+                    positions += to_string(occ.position)+" ";
                 }
+                out<<setw(15)<<lines<<positions<<endl;
             }
         }
         printLine('_',150);
 
-        out<<"=> Number of words with stop words: "<<sent.getAllWords()<<setw(60)<<"=> Number of words without stop words: "<<sent.getNormalWords()<<endl;
+        out<<"=> Number of words with stop words: "<<setw(60)<<sent.getAllWords()<<"=> Number of words without stop words: "<<sent.getNormalWords()<<endl;
 
         printLine('-',150);
     }
 
     printLine('_',150);
-    out<<"=> Beginning paragraph in line: "<<p.getStartingLine()<<" Number of sentences: "<<p.getTotalSentences()<<endl;
+    out<<"=> Beginning paragraph in line: "<<p.getStartingLine()<<"  Number of sentences: "<<p.getTotalSentences()<<endl;
     printLine('_',150);
+    out<<endl;
 }
 void Report::printFullResult(){
     HashTable<Token> &hash = analyzer.getTokens();
     int tableSize = hash.getTableSize();
 
-    out<<left<<setw(20)<<"WORD"<<setw(12)<<"FREQUENCY"<<setw(15)<<"PARAGRAPH"<<setw(15)<<"SENTENCE"<<setw(15)<<"LINE"<<setw(15)<<"POSITIONS\n";
+    out<<left<<setw(20)<<"WORD"<<setw(12)<<"FREQUENCY"<<setw(15)<<"PARAGRAPH"<<setw(15)<<"SENTENCE"<<setw(15)<<"LINE"<<"POSITIONS\n";
 
     printLine('-',150);
 

@@ -247,6 +247,14 @@ void Analyzer::analyze(TextReader &reader){
                 }
 
                 if(isSentenceEnd(c)){
+                    //reticence
+                    if(c=='.' && i+1<line.size() && line[i+1]=='.'){
+                        continue;
+                    }
+                    if(nonStopWords == 0 && stopWordsNum == 0){
+                        continue;
+                    }
+
                     sentenceNumber++;
 
                     double avg = (nonStopWords>0)
