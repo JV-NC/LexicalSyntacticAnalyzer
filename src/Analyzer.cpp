@@ -2,9 +2,11 @@
 #include "cctype"
 #include <fstream>
 //TODO: implement utf8 to ascii method
+//TODO: fix abbreviation check
 Analyzer::Analyzer(const string &stopWordsFilename, const string &expressionsFilename){
     loadStopWords(stopWordsFilename);
     loadExpressions(expressionsFilename);
+    loadAbbreviations();
 }
 
 void Analyzer::loadStopWords(const string &filename){
@@ -23,6 +25,14 @@ void Analyzer::loadExpressions(const string &filename){
         if(!line.empty()){
             expressions.insert(normalizeWord(line));
         }
+    }
+}
+void Analyzer::loadAbbreviations(){
+    const int abSize=6;
+    string ab[abSize] = {"sr", "sra", "dr", "dra", "prof", "etc"};
+
+    for(int i=0; i<abSize;i++){
+        abbreviations.insert(ab[i]);
     }
 }
 bool Analyzer::isSentenceEnd(char c){
@@ -169,11 +179,22 @@ void Analyzer::finalizeSentenceIfPending(
     }
 }
 
+bool Analyzer::isDotInNumber(const string &line, size_t i){
+    if(i==0 || i+1>=line.size())
+        return false;
+    return isdigit(line[i-1]) && isdigit(line[i+1]);
+}
+
+bool Analyzer::isAbbreviation(const string &word){
+    return abbreviations.contains(word);
+}
+
 void Analyzer::analyze(TextReader &reader){
     int paragraphNumber = 1, sentenceNumber = 0, startingLine = 1;
     int stopWordsNum = 0, nonStopWords = 0, totalWordLength = 0, position = 0;
     HashTable<Token> currentTokens;
     HashTable<Expression> currentExpressions;
+    string word, lastToken;
 
     while(reader.hasNextLine()){
         string line = reader.nextLine();
@@ -205,8 +226,6 @@ void Analyzer::analyze(TextReader &reader){
             continue;
         }
 
-        string word;
-
         for(size_t i=0; i<=line.size(); i++){
             unsigned char c = (i< line.size()) ? line[i]: ' ';
 
@@ -235,6 +254,7 @@ void Analyzer::analyze(TextReader &reader){
                                 reader.getCurrentLine(),
                                 position
                             );
+                            lastToken = word;
 
                             nonStopWords++;
                             totalWordLength += word.length();
@@ -242,15 +262,25 @@ void Analyzer::analyze(TextReader &reader){
                             stopWordsNum++;
                         }
                     }
-                    
                     word.clear();
                 }
 
                 if(isSentenceEnd(c)){
-                    //reticence
-                    if(c=='.' && i+1<line.size() && line[i+1]=='.'){
-                        continue;
+                    if(c=='.'){
+                        //Elipsis check
+                        if(i+1<line.size() && line[i+1]=='.'){
+                            continue;
+                        }
+                        //Between numbers check
+                        if(isDotInNumber(line,i)){
+                            continue;
+                        }
+                        //Abbreviation check
+                        if(isAbbreviation(lastToken)){
+                            continue;
+                        }
                     }
+                    
                     if(nonStopWords == 0 && stopWordsNum == 0){
                         continue;
                     }

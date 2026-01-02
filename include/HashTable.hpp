@@ -33,6 +33,7 @@ public:
 		delete[] table;
 	}
 
+	void insert(const string &key); //declaration for class specialization of HashTable<string>
 	void insert(const string &key, int paragraph, int sentence, int line, int position){
 		int index = hashFunction(key);
 		
@@ -77,6 +78,15 @@ public:
 
 		return count;
 	}
+	bool contains(const string &key){
+		int index = hashFunction(key);
+		for(auto it = table[index].begin(); it!=table[index].end(); it++){
+			if(it->getText()==key){
+				return true;
+			}
+		}
+		return false;
+	}
 	T* toArray(int &outSize){
 		outSize = countObjects();
 
@@ -101,5 +111,30 @@ public:
 		}
 	}
 };
+
+//Specialization: HashTable<string>
+template<>
+inline void HashTable<string>::insert(const string &key){
+	int index = hashFunction(key);
+
+	for(auto it=table[index].begin(); it!=table[index].end(); it++){
+		if((*it)==key){
+			return;
+		}
+		table[index].insert(key);
+	}
+}
+template<>
+inline bool HashTable<string>::contains(const string &key){
+	int index = hashFunction(key);
+	for(auto it=table[index].begin(); it!=table[index].end(); it++){
+		if((*it)==key){
+			return true;
+		}
+	}
+	return false;
+}
+
+using HashSet = HashTable<string>;
 
 #endif

@@ -23,9 +23,11 @@ private:
 
     LinkedList<string> stopWords;
     LinkedList<string> expressions;
+    HashSet abbreviations;
 
     void loadStopWords(const string &filename);
     void loadExpressions(const string &filename);
+    void loadAbbreviations();
     bool isSentenceEnd(char c);
     bool isWordChar(unsigned char c);
     bool isStopWord(string &word);
@@ -33,6 +35,8 @@ private:
     string normalizeWord(const string &word);
     string normalizeLine(const string &line);
     void finalizeSentenceIfPending(int &sentenceNumber, int paragraphNumber, int &stopWordsNum, int &nonStopWords, int &totalWordLength, int &position, HashTable<Token> &currentTokens);
+    bool isDotInNumber(const string &line, size_t i);
+    bool isAbbreviation(const string &word);
 
 public:
     Analyzer(const string &stopWordsFilename, const string &expressionsFilename);
