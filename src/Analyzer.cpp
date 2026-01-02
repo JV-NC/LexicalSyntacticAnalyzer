@@ -2,7 +2,6 @@
 #include "cctype"
 #include <fstream>
 //TODO: implement utf8 to ascii method
-//TODO: correct empty paragraphs that do not have sentence
 Analyzer::Analyzer(const string &stopWordsFilename, const string &expressionsFilename){
     loadStopWords(stopWordsFilename);
     loadExpressions(expressionsFilename);
@@ -143,8 +142,36 @@ string Analyzer::normalizeLine(const string &line){
     return result;
 }
 
+void Analyzer::finalizeSentenceIfPending(
+    int &sentenceNumber,
+    int paragraphNumber,
+    int &stopWordsNum,
+    int &nonStopWords,
+    int &totalWordLength,
+    int &position,
+    HashTable<Token> &currentTokens
+){
+    if(position > 0){
+        sentenceNumber++;
+
+        double avg = (nonStopWords > 0)
+            ? static_cast<double>(totalWordLength) / nonStopWords
+            : 0.0;
+
+        sentences.enqueue(
+            Sentence(paragraphNumber, sentenceNumber, stopWordsNum, nonStopWords, avg)
+        );
+
+        sentenceTokens.insert(currentTokens);
+        currentTokens.clear();
+
+        stopWordsNum = nonStopWords = totalWordLength = position = 0;
+    }
+}
+
 void Analyzer::analyze(TextReader &reader){
     int paragraphNumber = 1, sentenceNumber = 0, startingLine = 1;
+    int stopWordsNum = 0, nonStopWords = 0, totalWordLength = 0, position = 0;
     HashTable<Token> currentTokens;
     HashTable<Expression> currentExpressions;
 
@@ -155,11 +182,22 @@ void Analyzer::analyze(TextReader &reader){
         checkExpressions(normalizedLine, reader.getCurrentLine(), currentExpressions);
 
         if(line.empty()){
-            paragraphs.enqueue(
-                Paragraph(paragraphNumber, startingLine, sentenceNumber)
+            finalizeSentenceIfPending(
+                sentenceNumber,
+                paragraphNumber,
+                stopWordsNum,
+                nonStopWords,
+                totalWordLength,
+                position,
+                currentTokens
             );
+            if(sentenceNumber>0){
+                paragraphs.enqueue(
+                    Paragraph(paragraphNumber, startingLine, sentenceNumber)
+                );
+                paragraphExpressions.insert(currentExpressions);
+            }
             
-            paragraphExpressions.insert(currentExpressions);
             currentExpressions.clear();
             paragraphNumber++;
             sentenceNumber = 0;
@@ -167,7 +205,6 @@ void Analyzer::analyze(TextReader &reader){
             continue;
         }
 
-        int stopWords = 0, nonStopWords = 0, totalWordLength = 0, position = 0;
         string word;
 
         for(size_t i=0; i<=line.size(); i++){
@@ -202,7 +239,7 @@ void Analyzer::analyze(TextReader &reader){
                             nonStopWords++;
                             totalWordLength += word.length();
                         }else{
-                            stopWords++;
+                            stopWordsNum++;
                         }
                     }
                     
@@ -217,12 +254,12 @@ void Analyzer::analyze(TextReader &reader){
                         : 0.0;
 
                     sentences.enqueue(
-                        Sentence(paragraphNumber, sentenceNumber, stopWords, nonStopWords, avg)
+                        Sentence(paragraphNumber, sentenceNumber, stopWordsNum, nonStopWords, avg)
                     );
                     
                     sentenceTokens.insert(currentTokens);
                     currentTokens.clear();
-                    stopWords=0;
+                    stopWordsNum=0;
                     nonStopWords=0;
                     totalWordLength=0;
                     position=0;
@@ -231,10 +268,21 @@ void Analyzer::analyze(TextReader &reader){
         }
     }
 
-    paragraphs.enqueue(
-        Paragraph(paragraphNumber, startingLine, sentenceNumber)
+    finalizeSentenceIfPending(
+        sentenceNumber,
+        paragraphNumber,
+        stopWordsNum,
+        nonStopWords,
+        totalWordLength,
+        position,
+        currentTokens
     );
-    paragraphExpressions.insert(currentExpressions);
+    if(sentenceNumber>0){
+        paragraphs.enqueue(
+            Paragraph(paragraphNumber, startingLine, sentenceNumber)
+        );
+        paragraphExpressions.insert(currentExpressions);
+    }
 }
 
 HashTable<Token>& Analyzer::getTokens(){

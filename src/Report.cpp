@@ -1,9 +1,8 @@
 #include "../include/Report.hpp"
 #include <iomanip>
-//TODO: implement partial results, and paragraph/sentence stats
+//TODO: implement paragraph/sentence stats
 //TODO: implement stack for pontuation.
-//TODO: expressions
-//TODO: refactor printParagraphPartial for Paragraph parameter
+//TODO: implement expressions on paragraphPartial
 Report::Report(Analyzer &a, ostream &output): analyzer(a), out(output) {}
 
 void Report::printLine(char c, int n){
@@ -18,132 +17,63 @@ void Report::printTitle(const string &title){
 }
 
 void Report::printPartialResult(){
-    Queue<Paragraph> q = analyzer.getParagraphs();
+    Queue<Paragraph> pq = analyzer.getParagraphs();
+    Queue<Sentence> sq = analyzer.getSentences();
+    LinkedList<HashTable<Token>>::Iterator it = analyzer.getSentenceTokens().begin();
     Paragraph p;
     int paragraphNumber = 1;
     
-    while(!q.isEmpty()){
-        q.dequeue(p);
-        printParagraphPartial(paragraphNumber, p);
+    while(!pq.isEmpty()){
+        pq.dequeue(p);
+        printParagraphPartial(p, sq, it);
         paragraphNumber++;
     }
 }
-void Report::printParagraphPartial(int i, Paragraph p){
-    out<<"Paragraph "<<i<<" : "<<p.getNumber()<<" , "<<p.getStartingLine()<<" , "<<p.getTotalSentences()<<endl;
-    Queue<Sentence> q = analyzer.getSentences();
-    Sentence s;
-    int j=1;
-    for(j=0;j<p.getTotalSentences();j++){
-        if(!q.dequeue(s)){
-            out<<"Failure on dequeuing sentences";
+void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<HashTable<Token>>::Iterator &tokenIt){
+    for(int s=0; s<p.getTotalSentences(); s++){
+        Sentence sent;
+        sq.dequeue(sent);
+
+        HashTable<Token> &hash = *tokenIt;
+        ++tokenIt;
+
+        printLine('_',150);
+
+        out<<left<<setw(25)<<"WORD"<<setw(15)<<"PARAGRAPH"<<setw(15)<<"SENTENCE"<<setw(15)<<"LINE"<<setw(15)<<"FREQUENCY"<<"POSITIONS\n";
+
+        printLine('-',150);
+
+        for(int i=0; i<hash.getTableSize(); i++){
+            LinkedList<Token> &bucket = hash.getBucket(i);
+
+            for(LinkedList<Token>::Iterator it=bucket.begin(); it!= bucket.end(); it++){
+                Token &token = *it;
+
+                out<<left<<setw(25)<<token.getText()<<setw(15)<<sent.getParagraphNumber()<<setw(15)<<sent.getSentenceNumber();
+
+                bool first = true;
+                LinkedList<Occurrence> &occList = token.getOccurrences();
+                for(LinkedList<Occurrence>::Iterator occIt=occList.begin(); occIt!=occList.end(); occIt++){
+                    Occurrence occ = *occIt;
+                    if(!first){
+                        out<<setw(25)<<" "<<setw(15)<<" "<<setw(15)<<" ";
+                    }
+                    out<<setw(15)<<occ.line<<setw(15)<<token.getFrequency()<<setw(15)<<occ.position<<endl;
+                    
+                    first = false;
+                }
+            }
         }
-        out<<"Sentence "<<j+1<<" : "<<s.getAllWords()<<" , "<<s.getAverageWordLength()<<" , "<<s.getNormalWords()<<" , "<<s.getParagraphNumber()<<" , "<<s.getSentenceNumber()<<endl;
+        printLine('_',150);
+
+        out<<"=> Number of words with stop words: "<<sent.getAllWords()<<setw(60)<<"=> Number of words without stop words: "<<sent.getNormalWords()<<endl;
+
+        printLine('-',150);
     }
-    // static Node<Sentence> *sentenceNode = analyzer.getSentences().getHead();
-    // static Node<HashTable<Token>> *tokenNode = analyzer.getSentenceTokens().getHead();
-    // static Node<HashTable<Expression>> *exprNode = analyzer.getParagraphExpressions().getHead();
 
-    // //find current paragraph
-    // Node<Paragraph> *p = analyzer.getParagraphs().getHead();
-    // for(int i=1; i<paragraphNumber; i++)
-    //     p = p->next;
-
-    // int sentenceCount = p->data.getTotalSentences();
-
-    // for(int i=0; i<sentenceCount; i++){
-    //     printLine('_',150);
-
-    //     out<<left
-    //        <<setw(25)<<"WORD"
-    //        <<setw(15)<<"PARAGRAPH"
-    //        <<setw(15)<<"SENTENCE"
-    //        <<setw(15)<<"LINE"
-    //        <<setw(15)<<"APPEARANCES"
-    //        <<setw(20)<<"POSITIONS\n";
-
-    //     printLine('-',150);
-
-    //     //print sentence tokens
-    //     HashTable<Token> &hash = tokenNode->data;
-    //     for(int j=0; j<hash.getTableSize(); j++){
-    //         LinkedList<Token> &bucket = hash.getBucket(i);
-    //         Node<Token> *node = bucket.getHead();
-
-    //         while(node){
-    //             Token &token = node->data;
-
-    //             out<<left<<setw(20)<<token.getText()<<setw(12)<<token.getFrequency();
-
-    //             Node<Occurrence> *occNode = token.getOccurrences().getHead();
-
-    //             bool first = true;
-
-    //             while(occNode){
-    //                 Occurrence &occ = occNode->data;
-
-    //                 if(!first){
-    //                     out<<setw(20)<<" "<<setw(12)<<" ";
-
-    //                 }
-
-    //                 out<<setw(15)<<occ.paragraph<<setw(15)<<occ.sentence<<setw(15)<<occ.line<<setw(15)<<occ.position<<endl;
-
-    //                 first = false;
-    //                 occNode = occNode->next;
-    //             }
-
-    //             printLine('-',150);
-    //             node = node->next;
-    //         }
-    //     }
-
-    //     printLine('_',150);
-
-    //     //Sentence stats
-    //     out<<"=> Number of words with stop words: "
-    //        <<sentenceNode->data.getAllWords()
-    //        <<setw(60)
-    //        <<" => Number of words without stop words: "
-    //        <<sentenceNode->data.getNormalWords()
-    //        <<'\n';
-
-    //     printLine('-',150);
-
-    //     sentenceNode = sentenceNode->next;
-    //     tokenNode = tokenNode->next;
-    // }
-
-    // //paragraph stats
-    // printLine('_',150);
-    // out<<left<<setw(40)<<"EXPRESSION"
-    //    <<setw(15)<<"FREQUENCY"
-    //    <<setw(15)<<"LINE\n";
-    // printLine('-',150);
-
-    // HashTable<Expression> &exprHash = exprNode->data;
-    // for(int i=0; i<exprHash.getTableSize(); i++){
-    //     Node<Expression> *e = exprHash.getBucket(i).getHead();
-    //     while(e){
-    //         Expression &exp = e->data;
-    //         out<<left<<setw(20)<<exp.getText()<<setw(12)<<exp.getFrequency()<<setw(12);
-    //         Node<int> *line = exp.getLines().getHead();
-    //         while(line){
-    //             out<<line->data<<" ";
-    //             line = line->next;
-    //         }
-    //         e = e->next;
-    //     }
-    // }
-
-    // printLine('=',150);
-    // out<<">> Beginning paragraph in line: "
-    //    <<p->data.getStartingLine()
-    //    <<"  Number of sentences: "
-    //    <<p->data.getTotalSentences()
-    //    <<'\n';
-    // printLine('=',150);
-
-    // exprNode = exprNode->next;
+    printLine('_',150);
+    out<<"=> Beginning paragraph in line: "<<p.getStartingLine()<<" Number of sentences: "<<p.getTotalSentences()<<endl;
+    printLine('_',150);
 }
 void Report::printFullResult(){
     HashTable<Token> &hash = analyzer.getTokens();

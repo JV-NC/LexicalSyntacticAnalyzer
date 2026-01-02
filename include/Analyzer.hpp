@@ -32,6 +32,7 @@ private:
     void checkExpressions(const string &line, int lineNumber, HashTable<Expression> &currentExpressions);
     string normalizeWord(const string &word);
     string normalizeLine(const string &line);
+    void finalizeSentenceIfPending(int &sentenceNumber, int paragraphNumber, int &stopWordsNum, int &nonStopWords, int &totalWordLength, int &position, HashTable<Token> &currentTokens);
 
 public:
     Analyzer(const string &stopWordsFilename, const string &expressionsFilename);
