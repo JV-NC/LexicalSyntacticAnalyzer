@@ -2,7 +2,6 @@
 #include <iomanip>
 //TODO: implement paragraph/sentence stats
 //TODO: implement stack for pontuation.
-//TODO: implement expressions on paragraphPartial
 Report::Report(Analyzer &a, ostream &output): analyzer(a), out(output) {}
 
 void Report::printLine(char c, int n){
@@ -22,15 +21,16 @@ void Report::printTitle(const string &title){
 void Report::printPartialResult(){
     Queue<Paragraph> pq = analyzer.getParagraphs();
     Queue<Sentence> sq = analyzer.getSentences();
-    LinkedList<HashTable<Token>>::Iterator it = analyzer.getSentenceTokens().begin();
+    LinkedList<HashTable<Token>>::Iterator tokensIt = analyzer.getSentenceTokens().begin();
+    LinkedList<HashTable<Expression>>::Iterator expIt = analyzer.getParagraphExpressions().begin();
     Paragraph p;
     
     while(!pq.isEmpty()){
         pq.dequeue(p);
-        printParagraphPartial(p, sq, it);
+        printParagraphPartial(p, sq, tokensIt, expIt);
     }
 }
-void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<HashTable<Token>>::Iterator &tokenIt){
+void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<HashTable<Token>>::Iterator &tokenIt, LinkedList<HashTable<Expression>>::Iterator &expIt){
     for(int s=0; s<p.getTotalSentences(); s++){
         Sentence sent;
         sq.dequeue(sent);
@@ -69,6 +69,13 @@ void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<
 
         printLine('-',150);
     }
+
+    HashTable<Expression> &expHash = *expIt;
+    ++expIt;
+    if(expHash.countObjects()>0){
+        printExpressionTable(expHash);
+    }
+
 
     printLine('_',150);
     out<<"=> Beginning paragraph in line: "<<p.getStartingLine()<<"  Number of sentences: "<<p.getTotalSentences()<<endl;
@@ -109,6 +116,38 @@ void Report::printFullResult(){
             printLine('-',150);
         }
     }
+
+    HashTable<Expression> &expHash = analyzer.getAllExpressions();
+    if(expHash.countObjects()>0){
+        printExpressionTable(expHash);
+    }
+}
+
+void Report::printExpressionTable(HashTable<Expression> &hash){
+    printLine('_',150);
+    out<<left<<setw(40)<<"EXPRESSION"<<setw(15)<<"FREQUENCY"<<setw(20)<<"LINE"<<endl;
+    
+    printLine('-',150);
+
+    for(int i=0; i<hash.getTableSize(); i++){
+        LinkedList<Expression> &bucket = hash.getBucket(i);
+
+        for(LinkedList<Expression>::Iterator itExp=bucket.begin(); itExp!=bucket.end(); itExp++){
+            Expression &exp = *itExp;
+
+            out<<left<<setw(40)<<exp.getText()<<setw(15)<<exp.getFrequency();
+
+            bool first = true;
+            for(LinkedList<int>::Iterator it=exp.getLines().begin(); it!=exp.getLines().end(); it++){
+                if(!first)
+                    out<<" ";
+                out<<*it;
+                first = false;
+            }
+            out<<endl;
+        }
+    }
+    printLine('-',150);
 }
 
 void Report::printSentenceStats(){

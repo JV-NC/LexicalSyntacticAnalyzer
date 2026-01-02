@@ -32,6 +32,7 @@ private:
     bool isWordChar(unsigned char c);
     bool isStopWord(string &word);
     void checkExpressions(const string &line, int lineNumber, HashTable<Expression> &currentExpressions);
+    char utf8ToAscii(unsigned char lead, unsigned char next);
     string normalizeWord(const string &word);
     string normalizeLine(const string &line);
     void finalizeSentenceIfPending(int &sentenceNumber, int paragraphNumber, int &stopWordsNum, int &nonStopWords, int &totalWordLength, int &position, HashTable<Token> &currentTokens);

@@ -1,8 +1,7 @@
 #include "../include/Analyzer.hpp"
 #include "cctype"
 #include <fstream>
-//TODO: implement utf8 to ascii method
-//TODO: fix abbreviation check
+
 Analyzer::Analyzer(const string &stopWordsFilename, const string &expressionsFilename){
     loadStopWords(stopWordsFilename);
     loadExpressions(expressionsFilename);
@@ -63,6 +62,45 @@ void Analyzer::checkExpressions(const string &line, int lineNumber, HashTable<Ex
         }
     }
 }
+char Analyzer::utf8ToAscii(unsigned char lead, unsigned char next){
+    if(lead != 0xC3)
+        return '\0';
+
+    switch(next){
+        //A
+        case 0x80: case 0x81: case 0x82: case 0x83:
+        case 0xA0: case 0xA1: case 0xA2: case 0xA3:
+            return 'a';
+
+        //E
+        case 0x88: case 0x89:
+        case 0xA9: case 0xAA:
+            return 'e';
+
+        //I
+        case 0x8D:
+        case 0xAD:
+            return 'i';
+
+        //O
+        case 0x93: case 0x94: case 0x95:
+        case 0xB3: case 0xB4: case 0xB5:
+            return 'o';
+
+        //U
+        case 0x9A:
+        case 0xBA:
+            return 'u';
+
+        //C
+        case 0x87:
+        case 0xA7:
+            return 'c';
+
+        default:
+            return '\0';
+    }
+}
 string Analyzer::normalizeWord(const string &word){
     string result;
 
@@ -72,43 +110,10 @@ string Analyzer::normalizeWord(const string &word){
         if(c=='-'){
             result+='-';
         }
-
-        if(c== 0xC3 && i+1<word.size()){
-            unsigned char next = word[i+1];
-
-            switch(next){
-                //A
-                case 0x80: case 0x81: case 0x82: case 0x83:
-                case 0xA0: case 0xA1: case 0xA2: case 0xA3:
-                    result+='a';
-                break;
-                //E
-                case 0x88: case 0x89:
-                case 0xA9: case 0xAA:
-                    result+='e';
-                break;
-                //I
-                case 0x8D:
-                case 0xAD:
-                    result+='i';
-                break;
-                // O
-                case 0x93: case 0x94: case 0x95:
-                case 0xB3: case 0xB4: case 0xB5:
-                    result+='o';
-                break;
-                // U
-                case 0x9A:
-                case 0xBA:
-                    result+='u';
-                break;
-                // C
-                case 0x87:
-                case 0xA7:
-                    result+='c';
-                break;
-                default: break;
-            }
+        else if(c==0xC3 && i+1<word.size()){
+            char ascii = utf8ToAscii(c,word[i+1]);
+            if(ascii!='\0')
+                result+=ascii;
             i++;
         }
         else if(isalpha(c)){
@@ -124,28 +129,19 @@ string Analyzer::normalizeLine(const string &line){
     for(size_t i = 0; i < line.size(); i++){
         unsigned char c = line[i];
 
-        if(c == 0xC3 && i + 1 < line.size()){
-            unsigned char next = line[i + 1];
-            switch(next){
-                case 0xA0: case 0xA1: case 0xA2: case 0xA3:
-                case 0x80: case 0x81: case 0x82: case 0x83:
-                    result += 'a'; break;
-                case 0xA9: case 0xAA: case 0x88: case 0x89:
-                    result += 'e'; break;
-                case 0xAD: case 0x8D:
-                    result += 'i'; break;
-                case 0xB3: case 0xB4: case 0xB5:
-                case 0x93: case 0x94: case 0x95:
-                    result += 'o'; break;
-                case 0xBA: case 0x9A:
-                    result += 'u'; break;
-                case 0xA7: case 0x87:
-                    result += 'c'; break;
-                default: break;
-            }
+        if(c==' '){
+            result +=' ';
+        }
+        else if(c=='-'){
+            result+='-';
+        }
+        else if(c == 0xC3 && i + 1 < line.size()){
+            char ascii = utf8ToAscii(c,line[i + 1]);
+            if(ascii!='\0')
+                result += ascii;
             i++;
         }
-        else{
+        else if(isalpha(c)){
             result += tolower(c);
         }
     }
