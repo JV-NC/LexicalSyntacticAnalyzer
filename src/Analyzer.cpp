@@ -1,7 +1,7 @@
 #include "../include/Analyzer.hpp"
 #include "cctype"
 #include <fstream>
-
+//TODO: maybe change LinkedList of HashTables for a Queue of HashTable (check later)
 Analyzer::Analyzer(const string &stopWordsFilename, const string &expressionsFilename){
     loadStopWords(stopWordsFilename);
     loadExpressions(expressionsFilename);
@@ -190,11 +190,22 @@ bool Analyzer::isAbbreviation(const string &word){
     return false;
 }
 
+bool Analyzer::isOpening(char c){
+    return c=='(' || c=='[' || c=='{' || c=='"' || c=='\'';
+}
+bool Analyzer::isClosing(char c){
+    return c==')' || c==']' || c=='}' || c=='"' || c=='\'';
+}
+bool Analyzer::matches(char open, char close){
+    return (open=='(' && close==')') || (open=='[' && close==']') || (open=='{' && close=='}') || (open=='"' && close=='"') || (open=='\'' && close=='\'');
+}
+
 void Analyzer::analyze(TextReader &reader){
     int paragraphNumber = 1, sentenceNumber = 0, startingLine = 1;
     int stopWordsNum = 0, nonStopWords = 0, totalWordLength = 0, position = 0;
     HashTable<Token> currentTokens;
     HashTable<Expression> currentExpressions;
+    Stack<char> currentStack;
     string word, lastToken;
 
     while(reader.hasNextLine()){
@@ -218,9 +229,11 @@ void Analyzer::analyze(TextReader &reader){
                     Paragraph(paragraphNumber, startingLine, sentenceNumber)
                 );
                 paragraphExpressions.insert(currentExpressions);
+                punctuationBalance.enqueue(currentStack);
             }
             
             currentExpressions.clear();
+            currentStack.clear();
             paragraphNumber++;
             sentenceNumber = 0;
             startingLine = reader.getCurrentLine()+1;
@@ -229,6 +242,24 @@ void Analyzer::analyze(TextReader &reader){
 
         for(size_t i=0; i<=line.size(); i++){
             unsigned char c = (i< line.size()) ? line[i]: ' ';
+
+            if(isOpening(c)){
+                char top;
+                if((c=='"' || c=='\'') && currentStack.peek(top) && top==c){
+                    char dummy;
+                    currentStack.pop(dummy);
+                }else{
+                    currentStack.push(c);
+                }
+            }else if(isClosing(c)){
+                char top;
+                if(currentStack.peek(top) && matches(top, c)){
+                    char dummy;
+                    currentStack.pop(dummy);
+                }else{
+                    currentStack.push(c); //closing error
+                }
+            }
 
             if(isWordChar(c)){
                 word+=c;
@@ -321,6 +352,7 @@ void Analyzer::analyze(TextReader &reader){
             Paragraph(paragraphNumber, startingLine, sentenceNumber)
         );
         paragraphExpressions.insert(currentExpressions);
+        punctuationBalance.enqueue(currentStack);
     }
 }
 
@@ -341,4 +373,7 @@ Queue<Sentence>& Analyzer::getSentences(){
 }
 Queue<Paragraph>& Analyzer::getParagraphs(){
     return paragraphs;
+}
+Queue<Stack<char>>& Analyzer::getPunctuationBalance(){
+    return punctuationBalance;
 }

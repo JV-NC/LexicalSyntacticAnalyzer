@@ -12,11 +12,42 @@ private:
 	int size;
 public:
 	Stack(): topNode(nullptr), size(0) {}
+	Stack(const Stack<T> &other): topNode(nullptr), size(0) {
+		Stack<T> auxStack;
+		Node<T> *current = other.topNode;
+		while(current){
+			auxStack.push(current->data);
+			current = current->next;
+		}
+		while(!auxStack.isEmpty()){
+			T value;
+			auxStack.pop(value);
+			push(value);
+		}
+	}
 	~Stack(){
 		clear();
 	}
+	Stack<T>& operator=(const Stack<T> &other){
+		if(this!= &other){
+			clear();
+
+			Stack<T> auxStack;
+			Node<T> *current = other.topNode;
+			while(current){
+				auxStack.push(current->data);
+				current = current->next;
+			}
+			while(!auxStack.isEmpty()){
+				T value;
+				auxStack.pop(value);
+				push(value);
+			}
+		}
+		return *this;
+	}
 	
-    void push(T &value){
+    void push(const T &value){
 		Node<T> *newNode = new Node<T>(value);
 		newNode->next = topNode;
 		topNode = newNode;
@@ -43,7 +74,7 @@ public:
 	bool isEmpty(){
 		return topNode == nullptr;
 	}
-	void getSize(){
+	int getSize(){
 		return size;
 	}
 	void clear(){

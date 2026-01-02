@@ -7,6 +7,7 @@
 #include "Paragraph.hpp"
 #include "LinkedList.hpp"
 #include "Queue.hpp"
+#include "Stack.hpp"
 #include "Token.hpp"
 #include "Expression.hpp"
 
@@ -17,6 +18,8 @@ private:
 
     HashTable<Expression> allExpressions;
     LinkedList<HashTable<Expression>> paragraphExpressions;
+
+    Queue<Stack<char>> punctuationBalance;
 
     Queue<Sentence> sentences;
     Queue<Paragraph> paragraphs;
@@ -39,6 +42,10 @@ private:
     bool isDotInNumber(const string &line, size_t i);
     bool isAbbreviation(const string &word);
 
+    bool isOpening(char c);
+    bool isClosing(char c);
+    bool matches(char open, char close);
+
 public:
     Analyzer(const string &stopWordsFilename, const string &expressionsFilename);
 
@@ -50,6 +57,7 @@ public:
     LinkedList<HashTable<Expression>>& getParagraphExpressions();
     Queue<Sentence>& getSentences();
     Queue<Paragraph>& getParagraphs();
+    Queue<Stack<char>>& getPunctuationBalance();
 };
 
 #endif

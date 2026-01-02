@@ -13,7 +13,7 @@ private:
     void printTitle(const string &title);
 
     void printPartialResult();
-    void printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<HashTable<Token>>::Iterator &tokenIt, LinkedList<HashTable<Expression>>::Iterator &expIt);
+    void printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<HashTable<Token>>::Iterator &tokenIt, LinkedList<HashTable<Expression>>::Iterator &expIt, Stack<char> ps);
     void printFullResult();
     void printExpressionTable(HashTable<Expression> &hash);
 

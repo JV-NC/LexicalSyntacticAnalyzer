@@ -1,7 +1,6 @@
 #include "../include/Report.hpp"
 #include <iomanip>
 //TODO: implement paragraph/sentence stats
-//TODO: implement stack for pontuation.
 Report::Report(Analyzer &a, ostream &output): analyzer(a), out(output) {}
 
 void Report::printLine(char c, int n){
@@ -23,14 +22,17 @@ void Report::printPartialResult(){
     Queue<Sentence> sq = analyzer.getSentences();
     LinkedList<HashTable<Token>>::Iterator tokensIt = analyzer.getSentenceTokens().begin();
     LinkedList<HashTable<Expression>>::Iterator expIt = analyzer.getParagraphExpressions().begin();
+    Queue<Stack<char>> punctuationBalance = analyzer.getPunctuationBalance();
+    Stack<char> punctStack;
     Paragraph p;
     
     while(!pq.isEmpty()){
         pq.dequeue(p);
-        printParagraphPartial(p, sq, tokensIt, expIt);
+        punctuationBalance.dequeue(punctStack);
+        printParagraphPartial(p, sq, tokensIt, expIt, punctStack);
     }
 }
-void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<HashTable<Token>>::Iterator &tokenIt, LinkedList<HashTable<Expression>>::Iterator &expIt){
+void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<HashTable<Token>>::Iterator &tokenIt, LinkedList<HashTable<Expression>>::Iterator &expIt, Stack<char> ps){
     for(int s=0; s<p.getTotalSentences(); s++){
         Sentence sent;
         sq.dequeue(sent);
@@ -76,6 +78,18 @@ void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<
         printExpressionTable(expHash);
     }
 
+    //punctuation balance
+    if(!ps.isEmpty()){
+        printLine('_',150);
+        out<<"=> Unbalanced symbols\n"<<"=> Unmatched symbols: ";
+        char c;
+        while(!ps.isEmpty()){
+            ps.pop(c);
+            out<<c<<" ";
+        }
+        out<<endl;
+        printLine('-',150);
+    }
 
     printLine('_',150);
     out<<"=> Beginning paragraph in line: "<<p.getStartingLine()<<"  Number of sentences: "<<p.getTotalSentences()<<endl;
