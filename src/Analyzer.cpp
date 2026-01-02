@@ -186,7 +186,12 @@ bool Analyzer::isDotInNumber(const string &line, size_t i){
 }
 
 bool Analyzer::isAbbreviation(const string &word){
-    return abbreviations.contains(word);
+    for(LinkedList<string>::Iterator it=abbreviations.begin(); it!=abbreviations.end(); it++){
+        if((*it)==word){
+            return true;
+        }
+    }
+    return false;
 }
 
 void Analyzer::analyze(TextReader &reader){

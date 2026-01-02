@@ -23,7 +23,7 @@ private:
 
     LinkedList<string> stopWords;
     LinkedList<string> expressions;
-    HashSet abbreviations;
+    LinkedList<string> abbreviations;
 
     void loadStopWords(const string &filename);
     void loadExpressions(const string &filename);
