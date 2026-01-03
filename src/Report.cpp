@@ -107,8 +107,7 @@ void Report::printFullResult(){
         out<<left<<setw(20)<<token.getText()<<setw(12)<<token.getFrequency();
 
         bool first = true;
-        for(auto it = token.getOccurrences().begin();
-            it != token.getOccurrences().end(); it++){
+        for(LinkedList<Occurrence>::Iterator it = token.getOccurrences().begin(); it!=token.getOccurrences().end(); it++){
 
             if(!first)
                 out<<setw(20)<<" "<<setw(12)<<" ";
@@ -122,6 +121,9 @@ void Report::printFullResult(){
     }
 
     delete[] arr;
+
+    printSentenceStats();
+    printParagraphStats();
 
     HashTable<Expression> &expHash = analyzer.getAllExpressions();
     if(expHash.countObjects()>0){
@@ -240,12 +242,48 @@ void Report::printFullResultSortMetrics(HashTable<Token> &hash){
     printLine('=',150);
     out<<endl;
 }
-
 void Report::printSentenceStats(){
+    Queue<Sentence> sq = analyzer.getSentences();
 
+    if(sq.isEmpty()){
+        out<<"Error in printSentenceStats;\n";
+        return;
+    }
+    
+    printLine('_',150);
+    out<<setw(110)<<"NUMBER OF WORDS IN EACH SENTENCE WITH AND WITHOUT STOP WORDS"<<endl;
+    printLine('-',150);
+
+    Sentence s;
+    while(!sq.isEmpty()){
+        sq.dequeue(s);
+
+        out<<"Paragraph: "<<setw(4)<<s.getParagraphNumber()<<"\tSentence: "<<setw(4)<<s.getSentenceNumber()<<"\tNumber of words with stop words: "<<setw(4)<<s.getAllWords()<<"\tNumber of words without stop words: "<<s.getNormalWords()<<'\n';
+        printLine('_',150);
+        out<<'\n';
+    }
 }
 void Report::printParagraphStats(){
+    Queue<Paragraph> pq = analyzer.getParagraphs();
 
+    if(pq.isEmpty()){
+        out<<"Error in printParagraphStats;\n";
+        return;
+    }
+
+    printLine('_',150);
+    out<<setw(90)<<"LINE NUMBER THAT START EACH PARAGRAPH"<<endl;
+    printLine('-',150);
+
+    Paragraph p;
+    while(!pq.isEmpty()){
+        pq.dequeue(p);
+
+        out<<"Paragraph: "<<setw(7)<<p.getNumber()<<"\tBeginning in line: "<<setw(7)<<p.getStartingLine()<<"\t Number of sentences: "<<p.getTotalSentences()<<endl;
+    }
+
+    printLine('_',150);
+    out<<'\n';
 }
 
 void Report::generate(){
@@ -256,9 +294,6 @@ void Report::generate(){
 
     printTitle("### FULL RESULT ###");
     printFullResult();
-
-    printSentenceStats();
-    printParagraphStats();
 
     printTitle("### END PROCESS ###");
 }
