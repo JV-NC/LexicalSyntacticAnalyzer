@@ -6,6 +6,8 @@ Expression::Expression(const Expression &other): text(other.text), frequency(oth
 Expression& Expression::operator=(const Expression& other){
     if(this!=&other){
         lines.clear();
+        text = other.text;
+        frequency = other.frequency;
         lines = other.lines;
     }
     return *this;

@@ -3,6 +3,9 @@
 
 #include <ostream>
 #include "Analyzer.hpp"
+#include  "Sorter.hpp"
+#include "TokenComparators.hpp"
+#include "ExpressionComparators.hpp"
 
 class Report{
 private:
@@ -15,7 +18,8 @@ private:
     void printPartialResult();
     void printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<HashTable<Token>>::Iterator &tokenIt, LinkedList<HashTable<Expression>>::Iterator &expIt, Stack<char> ps);
     void printFullResult();
-    void printExpressionTable(HashTable<Expression> &hash);
+    void printSortedTokenTable(HashTable<Token> &hash, int paragraph, int sentence);
+    void printSortedExpressionTable(HashTable<Expression> &hash);
 
     void printSentenceStats();
     void printParagraphStats();

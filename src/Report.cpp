@@ -46,25 +46,7 @@ void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<
 
         printLine('-',150);
 
-        for(int i=0; i<hash.getTableSize(); i++){
-            LinkedList<Token> &bucket = hash.getBucket(i);
-
-            for(LinkedList<Token>::Iterator it=bucket.begin(); it!= bucket.end(); it++){
-                Token &token = *it;
-
-                out<<left<<setw(25)<<token.getText()<<setw(15)<<token.getFrequency()<<setw(15)<<sent.getParagraphNumber()<<setw(15)<<sent.getSentenceNumber();
-
-                string lines;
-                string positions;
-
-                for(LinkedList<Occurrence>::Iterator occIt=token.getOccurrences().begin(); occIt!=token.getOccurrences().end(); occIt++){
-                    Occurrence occ = *occIt;
-                    lines += to_string(occ.line)+" ";
-                    positions += to_string(occ.position)+" ";
-                }
-                out<<setw(15)<<lines<<positions<<endl;
-            }
-        }
+        printSortedTokenTable(hash,sent.getParagraphNumber(),sent.getSentenceNumber());
         printLine('_',150);
 
         out<<"=> Number of words with stop words: "<<setw(60)<<sent.getAllWords()<<"=> Number of words without stop words: "<<sent.getNormalWords()<<endl;
@@ -75,7 +57,7 @@ void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<
     HashTable<Expression> &expHash = *expIt;
     ++expIt;
     if(expHash.countObjects()>0){
-        printExpressionTable(expHash);
+        printSortedExpressionTable(expHash);
     }
 
     //punctuation balance
@@ -98,68 +80,121 @@ void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<
 }
 void Report::printFullResult(){
     HashTable<Token> &hash = analyzer.getTokens();
-    int tableSize = hash.getTableSize();
 
-    out<<left<<setw(20)<<"WORD"<<setw(12)<<"FREQUENCY"<<setw(15)<<"PARAGRAPH"<<setw(15)<<"SENTENCE"<<setw(15)<<"LINE"<<"POSITIONS\n";
+    out<<left<<setw(20)<<"WORD"<<setw(12)<<"FREQUENCY"
+       <<setw(15)<<"PARAGRAPH"<<setw(15)<<"SENTENCE"
+       <<setw(15)<<"LINE"<<"POSITIONS\n";
 
     printLine('-',150);
 
-    for(int i=0; i<tableSize; i++){
-        LinkedList<Token> &bucket = hash.getBucket(i);
+    int size = 0;
+    Token *arr = hash.toArray(size);
 
-        for(LinkedList<Token>::Iterator itTokens=bucket.begin(); itTokens!=bucket.end(); itTokens++){
-            Token &token = *itTokens;
+    if(!arr || size == 0)
+        return;
 
-            out<<left<<setw(20)<<token.getText()<<setw(12)<<token.getFrequency();
+    SortMetrics metrics;
+    Sorter<Token>::quickSort(arr, size, tokenAlpha, metrics);
 
-            bool first = true;
+    for(int i = 0; i < size; i++){
+        Token &token = arr[i];
 
-            for(LinkedList<Occurrence>::Iterator itOcc=token.getOccurrences().begin(); itOcc!=token.getOccurrences().end(); itOcc++){
-                Occurrence &occ = *itOcc;
+        out<<left<<setw(20)<<token.getText()
+           <<setw(12)<<token.getFrequency();
 
-                if(!first){
-                    out<<setw(20)<<" "<<setw(12)<<" ";
+        bool first = true;
+        for(auto it = token.getOccurrences().begin();
+            it != token.getOccurrences().end(); it++){
 
-                }
+            if(!first)
+                out<<setw(20)<<" "<<setw(12)<<" ";
 
-                out<<setw(15)<<occ.paragraph<<setw(15)<<occ.sentence<<setw(15)<<occ.line<<setw(15)<<occ.position<<endl;
+            out<<setw(15)<<(*it).paragraph
+               <<setw(15)<<(*it).sentence
+               <<setw(15)<<(*it).line
+               <<setw(15)<<(*it).position
+               <<endl;
 
-                first = false;
-            }
-
-            printLine('-',150);
+            first = false;
         }
+
+        printLine('-',150);
     }
+
+    printLine('_',150);
+    out<<"Metrics:\n"<<"Comparisons: "<<setw(20)<<metrics.comparisons<<"Swaps: "<<setw(20)<<metrics.swaps<<"Elapsed time: "<<setw(20)<<metrics.elapsedTime<<endl;
+    printLine('-',150);
+
+    delete[] arr;
 
     HashTable<Expression> &expHash = analyzer.getAllExpressions();
     if(expHash.countObjects()>0){
-        printExpressionTable(expHash);
+        printSortedExpressionTable(expHash);
     }
 }
+void Report::printSortedTokenTable(HashTable<Token> &hash, int paragraph, int sentence){
+    int size = 0;
+    Token *arr = hash.toArray(size);
 
-void Report::printExpressionTable(HashTable<Expression> &hash){
+    if(!arr || size==0)
+        return;
+    
+    SortMetrics metrics;
+    Sorter<Token>::quickSort(arr, size, tokenAlpha, metrics);
+
+    for(int i=0;i<size;i++){
+        Token &token = arr[i];
+
+        out<<left<<setw(25)<<token.getText()
+           <<setw(15)<<token.getFrequency()
+           <<setw(15)<<paragraph
+           <<setw(15)<<sentence;
+        
+        string lines, positions;
+
+        for(LinkedList<Occurrence>::Iterator it=token.getOccurrences().begin(); it!=token.getOccurrences().end(); it++){
+            lines += to_string((*it).line) + " ";
+            positions += to_string((*it).position) + " ";
+        }
+
+        out<<setw(15)<<lines<<positions<<endl;
+    }
+
+    printLine('_',150);
+    out<<"Metrics:\n"<<"Comparisons: "<<setw(20)<<metrics.comparisons<<"Swaps: "<<setw(20)<<metrics.swaps<<"Elapsed time: "<<setw(20)<<metrics.elapsedTime<<endl;
+    printLine('-',150);
+
+    delete[] arr;
+}
+void Report::printSortedExpressionTable(HashTable<Expression> &hash){
+    int size = 0;
+    Expression* arr = hash.toArray(size);
+
+    if(!arr || size==0)
+        return;
+    
+    SortMetrics metrics;
+    Sorter<Expression>::quickSort(arr,size,expressionAlpha,metrics);
+    
     printLine('_',150);
     out<<left<<setw(40)<<"EXPRESSION"<<setw(15)<<"FREQUENCY"<<setw(20)<<"LINE"<<endl;
     
     printLine('-',150);
 
-    for(int i=0; i<hash.getTableSize(); i++){
-        LinkedList<Expression> &bucket = hash.getBucket(i);
 
-        for(LinkedList<Expression>::Iterator itExp=bucket.begin(); itExp!=bucket.end(); itExp++){
-            Expression &exp = *itExp;
+    for(int i=0; i<size; i++){
+        Expression &exp = arr[i];
 
-            out<<left<<setw(40)<<exp.getText()<<setw(15)<<exp.getFrequency();
+        out<<left<<setw(40)<<exp.getText()<<setw(15)<<exp.getFrequency();
 
-            bool first = true;
-            for(LinkedList<int>::Iterator it=exp.getLines().begin(); it!=exp.getLines().end(); it++){
-                if(!first)
-                    out<<" ";
-                out<<*it;
-                first = false;
-            }
-            out<<endl;
+        bool first = true;
+        for(LinkedList<int>::Iterator it=exp.getLines().begin(); it!=exp.getLines().end(); it++){
+            if(!first)
+                out<<" ";
+            out<<*it;
+            first = false;
         }
+        out<<endl;
     }
     printLine('-',150);
 }
