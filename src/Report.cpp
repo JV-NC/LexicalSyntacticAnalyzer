@@ -3,6 +3,13 @@
 //TODO: implement paragraph/sentence stats
 Report::Report(Analyzer &a, ostream &output): analyzer(a), out(output) {}
 
+Token* Report::cloneArray(Token* src, int n){
+    Token* dst = new Token[n];
+    for(int i = 0; i < n; i++)
+        dst[i] = src[i];
+    return dst;
+}
+
 void Report::printLine(char c, int n){
     for(int i=0; i<n; i++)
         out<<c;
@@ -81,9 +88,7 @@ void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<
 void Report::printFullResult(){
     HashTable<Token> &hash = analyzer.getTokens();
 
-    out<<left<<setw(20)<<"WORD"<<setw(12)<<"FREQUENCY"
-       <<setw(15)<<"PARAGRAPH"<<setw(15)<<"SENTENCE"
-       <<setw(15)<<"LINE"<<"POSITIONS\n";
+    out<<left<<setw(20)<<"WORD"<<setw(12)<<"FREQUENCY"<<setw(15)<<"PARAGRAPH"<<setw(15)<<"SENTENCE"<<setw(15)<<"LINE"<<"POSITIONS\n";
 
     printLine('-',150);
 
@@ -99,8 +104,7 @@ void Report::printFullResult(){
     for(int i = 0; i < size; i++){
         Token &token = arr[i];
 
-        out<<left<<setw(20)<<token.getText()
-           <<setw(12)<<token.getFrequency();
+        out<<left<<setw(20)<<token.getText()<<setw(12)<<token.getFrequency();
 
         bool first = true;
         for(auto it = token.getOccurrences().begin();
@@ -109,11 +113,7 @@ void Report::printFullResult(){
             if(!first)
                 out<<setw(20)<<" "<<setw(12)<<" ";
 
-            out<<setw(15)<<(*it).paragraph
-               <<setw(15)<<(*it).sentence
-               <<setw(15)<<(*it).line
-               <<setw(15)<<(*it).position
-               <<endl;
+            out<<setw(15)<<(*it).paragraph<<setw(15)<<(*it).sentence<<setw(15)<<(*it).line<<setw(15)<<(*it).position<<endl;
 
             first = false;
         }
@@ -121,16 +121,14 @@ void Report::printFullResult(){
         printLine('-',150);
     }
 
-    printLine('_',150);
-    out<<"Metrics:\n"<<"Comparisons: "<<setw(20)<<metrics.comparisons<<"Swaps: "<<setw(20)<<metrics.swaps<<"Elapsed time: "<<setw(20)<<metrics.elapsedTime<<endl;
-    printLine('-',150);
-
     delete[] arr;
 
     HashTable<Expression> &expHash = analyzer.getAllExpressions();
     if(expHash.countObjects()>0){
         printSortedExpressionTable(expHash);
     }
+
+    printFullResultSortMetrics(hash);
 }
 void Report::printSortedTokenTable(HashTable<Token> &hash, int paragraph, int sentence){
     int size = 0;
@@ -145,10 +143,7 @@ void Report::printSortedTokenTable(HashTable<Token> &hash, int paragraph, int se
     for(int i=0;i<size;i++){
         Token &token = arr[i];
 
-        out<<left<<setw(25)<<token.getText()
-           <<setw(15)<<token.getFrequency()
-           <<setw(15)<<paragraph
-           <<setw(15)<<sentence;
+        out<<left<<setw(25)<<token.getText()<<setw(15)<<token.getFrequency()<<setw(15)<<paragraph<<setw(15)<<sentence;
         
         string lines, positions;
 
@@ -159,10 +154,6 @@ void Report::printSortedTokenTable(HashTable<Token> &hash, int paragraph, int se
 
         out<<setw(15)<<lines<<positions<<endl;
     }
-
-    printLine('_',150);
-    out<<"Metrics:\n"<<"Comparisons: "<<setw(20)<<metrics.comparisons<<"Swaps: "<<setw(20)<<metrics.swaps<<"Elapsed time: "<<setw(20)<<metrics.elapsedTime<<endl;
-    printLine('-',150);
 
     delete[] arr;
 }
@@ -197,6 +188,57 @@ void Report::printSortedExpressionTable(HashTable<Expression> &hash){
         out<<endl;
     }
     printLine('-',150);
+}
+void Report::printFullResultSortMetrics(HashTable<Token> &hash){
+    int size = 0;
+    Token *base = hash.toArray(size);
+
+    if(!base || size==0)
+        return;
+
+    SortMetrics metrics[4];
+    Token *arr;
+    string alg[2] = {"MergeSort","QuickSort"};
+    string order[2] = {"Alphabetical","Frequency"};
+
+    //MergeSortAlpha
+    arr = cloneArray(base, size);
+    Sorter<Token>::mergeSort(arr, size, tokenAlpha, metrics[0]);
+    delete[] arr;
+
+    //MergeSortFreq
+    arr = cloneArray(base, size);
+    Sorter<Token>::mergeSort(arr, size, tokenFreq, metrics[1]);
+    delete[] arr;
+
+    //QuickSortAlpha
+    arr = cloneArray(base, size);
+    Sorter<Token>::quickSort(arr, size, tokenAlpha, metrics[2]);
+    delete[] arr;
+
+    //QuickSortFreq
+    arr = cloneArray(base, size);
+    Sorter<Token>::quickSort(arr, size, tokenFreq, metrics[3]);
+    delete[] arr;
+
+    delete[] base;
+
+    printLine('=',150);
+    out<<"SORT PERFORMANCE METRICS\n";
+    printLine('-',150);
+
+    out<<left<<setw(25)<<"Algorithm"<<setw(20)<<"Order"<<setw(20)<<"Comparisons"<<setw(20)<<"Swaps"<<setw(25)<<"Elapsed Time (s)"<<'\n';
+
+    printLine('-',150);
+
+    for(int i=0; i<2; i++){
+        for(int j=0; j<2;j++){
+            out<<left<<setw(25)<<alg[i%2]<<setw(20)<<order[j%2]<<setw(20)<<metrics[i*2+j].comparisons<<setw(20)<<metrics[i*2+j].swaps<<setw(20)<<metrics[i*2+j].elapsedTime<<endl;
+        }
+    }
+
+    printLine('=',150);
+    out<<endl;
 }
 
 void Report::printSentenceStats(){

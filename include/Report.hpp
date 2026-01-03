@@ -12,6 +12,8 @@ private:
     Analyzer &analyzer;
     ostream &out;
 
+    Token* cloneArray(Token* src, int n);
+
     void printLine(char c, int n);
     void printTitle(const string &title);
 
@@ -20,6 +22,7 @@ private:
     void printFullResult();
     void printSortedTokenTable(HashTable<Token> &hash, int paragraph, int sentence);
     void printSortedExpressionTable(HashTable<Expression> &hash);
+    void printFullResultSortMetrics(HashTable<Token> &hash);
 
     void printSentenceStats();
     void printParagraphStats();
