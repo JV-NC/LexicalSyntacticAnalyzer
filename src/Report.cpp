@@ -1,6 +1,7 @@
 #include "../include/Report.hpp"
 #include <iomanip>
-//TODO: implement paragraph/sentence stats
+//TODO: mark words 3 times or more in the same paragraph
+//TODO: length distribution
 Report::Report(Analyzer &a, ostream &output): analyzer(a), out(output) {}
 
 Token* Report::cloneArray(Token* src, int n){
@@ -13,7 +14,7 @@ Token* Report::cloneArray(Token* src, int n){
 void Report::printLine(char c, int n){
     for(int i=0; i<n; i++)
         out<<c;
-    out<<'\n';
+    out<<endl;
 }
 void Report::printTitle(const string &title){
     const int width = 150;
@@ -68,17 +69,19 @@ void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<
     }
 
     //punctuation balance
-    if(!ps.isEmpty()){
-        printLine('_',150);
-        out<<"=> Unbalanced symbols\n"<<"=> Unmatched symbols: ";
+    printLine('_',150);
+    if(ps.isEmpty()){
+        out<<"=> Balanced symbols: YES\n";
+    }else{
+        out<<"=> Balanced symbols: NO\n"<<"=> Unmatched symbols: ";
         char c;
         while(!ps.isEmpty()){
             ps.pop(c);
             out<<c<<" ";
         }
         out<<endl;
-        printLine('-',150);
     }
+    printLine('-',150);
 
     printLine('_',150);
     out<<"=> Beginning paragraph in line: "<<p.getStartingLine()<<"  Number of sentences: "<<p.getTotalSentences()<<endl;
@@ -121,6 +124,15 @@ void Report::printFullResult(){
     }
 
     delete[] arr;
+
+    //distinct vocabulary size
+    int distinctVocabulary = hash.countObjects();
+    printLine('_',150);
+    out << "DISTINCT VOCABULARY SIZE: " << distinctVocabulary << " WORDS\n";
+    printLine('-',150);
+
+    // 10 of most and least frequent words
+    printMostLeastFrequentWords(hash, 10);
 
     printSentenceStats();
     printParagraphStats();
@@ -229,7 +241,7 @@ void Report::printFullResultSortMetrics(HashTable<Token> &hash){
     out<<"SORT PERFORMANCE METRICS\n";
     printLine('-',150);
 
-    out<<left<<setw(25)<<"Algorithm"<<setw(20)<<"Order"<<setw(20)<<"Comparisons"<<setw(20)<<"Swaps"<<setw(25)<<"Elapsed Time (s)"<<'\n';
+    out<<left<<setw(25)<<"Algorithm"<<setw(20)<<"Order"<<setw(20)<<"Comparisons"<<setw(20)<<"Swaps"<<setw(25)<<"Elapsed Time (s)"<<endl;
 
     printLine('-',150);
 
@@ -242,8 +254,38 @@ void Report::printFullResultSortMetrics(HashTable<Token> &hash){
     printLine('=',150);
     out<<endl;
 }
+void Report::printMostLeastFrequentWords(HashTable<Token> &hash, int X){
+    int size = 0;
+    Token *arr = hash.toArray(size);
+    SortMetrics metrics;
+
+    if(!arr || size == 0)
+        return;
+    
+    Sorter<Token>::quickSort(arr, size, tokenFreq, metrics);
+
+    printLine('_',150);
+    out<<"TOP "<<X<<" MOST FREQUENT WORDS\n";
+    out<<left<<setw(20)<<"WORD"<<setw(12)<<"FREQUENCY"<<endl;
+    printLine('-',150);
+    for(int i=0; i<X && i<size; i++){
+        out<<left<<setw(20)<<arr[i].getText()<<arr[i].getFrequency()<<endl;
+    }
+    printLine('_',150);
+
+    printLine('_',150);
+    out<<"TOP "<<X<<" LEAST FREQUENT WORDS\n";
+    out<<left<<setw(20)<<"WORD"<<setw(12)<<"FREQUENCY"<<endl;
+    printLine('-',150);
+    for(int i=size-X; i<size; i++){
+        if(i>=0)
+            out<<left<<setw(20)<<arr[i].getText()<<arr[i].getFrequency()<<endl;
+    }
+    printLine('_',150);
+}
 void Report::printSentenceStats(){
     Queue<Sentence> sq = analyzer.getSentences();
+    int totalWords = 0, totalSentences = 0;
 
     if(sq.isEmpty()){
         out<<"Error in printSentenceStats;\n";
@@ -257,11 +299,20 @@ void Report::printSentenceStats(){
     Sentence s;
     while(!sq.isEmpty()){
         sq.dequeue(s);
+        totalWords+=s.getNormalWords();
+        totalSentences++;
 
-        out<<"Paragraph: "<<setw(4)<<s.getParagraphNumber()<<"\tSentence: "<<setw(4)<<s.getSentenceNumber()<<"\tNumber of words with stop words: "<<setw(4)<<s.getAllWords()<<"\tNumber of words without stop words: "<<s.getNormalWords()<<'\n';
+        out<<"Paragraph: "<<setw(7)<<s.getParagraphNumber()<<"\tSentence: "<<setw(7)<<s.getSentenceNumber()<<"\tNumber of words with stop words: "<<setw(4)<<s.getAllWords()<<"\tNumber of words without stop words: "<<setw(4)<<s.getNormalWords()
+        <<"Average word length: "<<setw(7)<<fixed<<setprecision(2)<<s.getAverageWordLength()<<endl;
         printLine('_',150);
-        out<<'\n';
+        out<<endl;
     }
+
+    double avgSentenceSize = totalSentences ? (double)totalWords / totalSentences : 0.0;
+
+    printLine('_',150);
+    out<<"AVERAGE SENTENCE LENGTH: "<<fixed<<setprecision(2)<<avgSentenceSize<<"WORDS\n";
+    printLine('-',150);
 }
 void Report::printParagraphStats(){
     Queue<Paragraph> pq = analyzer.getParagraphs();
@@ -283,7 +334,7 @@ void Report::printParagraphStats(){
     }
 
     printLine('_',150);
-    out<<'\n';
+    out<<endl;
 }
 
 void Report::generate(){

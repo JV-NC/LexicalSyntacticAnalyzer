@@ -23,6 +23,7 @@ private:
     void printSortedTokenTable(HashTable<Token> &hash, int paragraph, int sentence);
     void printSortedExpressionTable(HashTable<Expression> &hash);
     void printFullResultSortMetrics(HashTable<Token> &hash);
+    void printMostLeastFrequentWords(HashTable<Token> &hash, int X);
     void printSentenceStats();
     void printParagraphStats();
 
