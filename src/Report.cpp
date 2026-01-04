@@ -1,6 +1,5 @@
 #include "../include/Report.hpp"
 #include <iomanip>
-//TODO: mark words 3 times or more in the same paragraph
 //TODO: length distribution
 Report::Report(Analyzer &a, ostream &output): analyzer(a), out(output) {}
 
@@ -41,12 +40,34 @@ void Report::printPartialResult(){
     }
 }
 void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<HashTable<Token>>::Iterator &tokenIt, LinkedList<HashTable<Expression>>::Iterator &expIt, Stack<char> ps){
+    HashTable<Token> paragraphTokens;
     for(int s=0; s<p.getTotalSentences(); s++){
         Sentence sent;
         sq.dequeue(sent);
 
         HashTable<Token> &hash = *tokenIt;
         ++tokenIt;
+
+        //get tokens for paragraph
+        int size = 0;
+        Token *arr = hash.toArray(size);
+
+        if(arr && size > 0){
+            for(int i=0; i<size;i++){
+                Token &t = arr[i];
+                for(LinkedList<Occurrence>::Iterator occ = t.getOccurrences().begin(); occ!=t.getOccurrences().end(); occ++){
+                    paragraphTokens.insert(
+                        t.getText(),
+                        (*occ).paragraph,
+                        (*occ).sentence,
+                        (*occ).line,
+                        (*occ).position
+                    );
+                }
+            }
+        }
+
+        delete[] arr;
 
         printLine('_',150);
 
@@ -62,6 +83,10 @@ void Report::printParagraphPartial(Paragraph p, Queue<Sentence> &sq, LinkedList<
         printLine('-',150);
     }
 
+    //words used 3 or more times in the paragraph
+    printFrequentlyUsedWords(paragraphTokens);
+
+    //paragraph expressions
     HashTable<Expression> &expHash = *expIt;
     ++expIt;
     if(expHash.countObjects()>0){
@@ -170,6 +195,31 @@ void Report::printSortedTokenTable(HashTable<Token> &hash, int paragraph, int se
     }
 
     delete[] arr;
+}
+void Report::printFrequentlyUsedWords(HashTable<Token> &hash){
+    int size = 0;
+    Token *arr = hash.toArray(size);
+
+    if(!arr || size==0)
+        return;
+    
+    SortMetrics metrics;
+    Sorter<Token>::quickSort(arr, size, tokenFreq, metrics);
+
+    if(arr[0].getFrequency()<3){
+        return;
+    }
+
+    printLine('_',150);
+    out<<left<<setw(30)<<"WORDS USED 3 OR MORE TIMES"<<"FREQUENCY"<<endl;
+    printLine('-',150);
+    for(int i=0;i<size;i++){
+        if(arr[i].getFrequency()<3){
+            break;
+        }
+        out<<left<<setw(30)<<arr[i].getText()<<arr[i].getFrequency()<<endl;
+    }
+    printLine('_',150);
 }
 void Report::printSortedExpressionTable(HashTable<Expression> &hash){
     int size = 0;
