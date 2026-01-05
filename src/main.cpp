@@ -5,11 +5,16 @@
 #include "../include/Analyzer.hpp"
 #include "../include/TextReader.hpp"
 
-int main(){
-    TextReader reader("data/DomCasmurro.txt");
+int main(int argc, char* argv[]){
+    if(argc<2){
+        cerr<<"Usage: ./LSA <input_text_file>\n";
+        return 1;
+    }
+
+    TextReader reader(argv[1]);
 
     if(!reader.isOpen()){
-        cerr<<"Error while opening input file.\n";
+        cerr<<"Error while opening input file: "<<argv[1]<<endl;
         return 1;
     }
 
@@ -28,6 +33,6 @@ int main(){
 
     output.close();
 
-    cout<<"Finished processing. Check output.txt.\n";
+    cout<<"Finished processing. Check output/output.txt.\n";
     return 0;
 }

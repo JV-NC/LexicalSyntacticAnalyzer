@@ -1,4 +1,9 @@
 # ===============================
+# Default input file
+# ===============================
+INPUT ?= data/DomCasmurro.txt
+
+# ===============================
 # System
 # ===============================
 ifeq ($(OS),Windows_NT)
@@ -69,7 +74,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 # Execute analysis
 # ===============================
 run: all
-	./$(BIN_DIR)/$(TARGET)
+	./$(BIN_DIR)/$(TARGET) $(INPUT)
 
 # ===============================
 # Generate plots
