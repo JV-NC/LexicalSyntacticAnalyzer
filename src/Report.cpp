@@ -333,6 +333,16 @@ void Report::printMostLeastFrequentWords(HashTable<Token> &hash, int X){
     }
     printLine('_',150);
 }
+void Report::printLengthDist(){
+    printLine('_',50);
+    out<<left<<"WORD LENGTH DISTRIBUTION\n"<<setw(15)<<"Length"<<"Frequency"<<endl;
+    printLine('-',50);
+    LinkedList<MapEntry> lengthDist = analyzer.getLengthDist();
+    for(LinkedList<MapEntry>::Iterator it=lengthDist.begin(); it!=lengthDist.end(); it++){
+        out<<left<<setw(15)<<(*it).key<<(*it).value<<endl;
+    }
+
+}
 void Report::printSentenceStats(){
     Queue<Sentence> sq = analyzer.getSentences();
     int totalWords = 0, totalSentences = 0;
@@ -395,6 +405,8 @@ void Report::generate(){
 
     printTitle("### FULL RESULT ###");
     printFullResult();
+
+    printLengthDist();
 
     printTitle("### END PROCESS ###");
 }

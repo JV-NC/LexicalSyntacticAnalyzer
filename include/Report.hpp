@@ -25,6 +25,7 @@ private:
     void printSortedExpressionTable(HashTable<Expression> &hash);
     void printFullResultSortMetrics(HashTable<Token> &hash);
     void printMostLeastFrequentWords(HashTable<Token> &hash, int X);
+    void printLengthDist();
     void printSentenceStats();
     void printParagraphStats();
 

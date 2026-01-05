@@ -10,6 +10,9 @@
 #include "Stack.hpp"
 #include "Token.hpp"
 #include "Expression.hpp"
+#include "IntIntMap.hpp"
+#include "Sorter.hpp"
+#include "MapEntryComparators.hpp"
 
 class Analyzer{
 private:
@@ -27,6 +30,8 @@ private:
     LinkedList<string> stopWords;
     LinkedList<string> expressions;
     LinkedList<string> abbreviations;
+
+    IntIntMap lengthDist;
 
     void loadStopWords(const string &filename);
     void loadExpressions(const string &filename);
@@ -46,6 +51,8 @@ private:
     bool isClosing(char c);
     bool matches(char open, char close);
 
+    void generateLengthDistribution();
+
 public:
     Analyzer(const string &stopWordsFilename, const string &expressionsFilename);
 
@@ -58,6 +65,7 @@ public:
     Queue<Sentence>& getSentences();
     Queue<Paragraph>& getParagraphs();
     Queue<Stack<char>>& getPunctuationBalance();
+    LinkedList<MapEntry>& getLengthDist();
 };
 
 #endif

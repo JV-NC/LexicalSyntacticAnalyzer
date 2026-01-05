@@ -200,6 +200,35 @@ bool Analyzer::matches(char open, char close){
     return (open=='(' && close==')') || (open=='[' && close==']') || (open=='{' && close=='}') || (open=='"' && close=='"') || (open=='\'' && close=='\'');
 }
 
+void Analyzer::generateLengthDistribution(){
+    lengthDist.clear();
+
+    for(int i=0;i<tokens.getTableSize();i++){
+        for(LinkedList<Token>::Iterator it=tokens.getBucket(i).begin(); it!=tokens.getBucket(i).end(); it++){
+            int len = (*it).getText().length();
+            int freq = (*it).getFrequency();
+            lengthDist.increment(len, freq);
+        }
+    }
+
+    //sort
+    int n = 0;
+    LinkedList<MapEntry> &list = lengthDist.getEntries();
+
+    MapEntry *arr = list.toArray(n);
+    if(!arr || n == 0) return;
+
+    SortMetrics metrics;
+    Sorter<MapEntry>::quickSort(arr, n, mapEntryKeyAsc, metrics);
+
+    list.clear();
+    for(int i=0;i<n;i++){
+        list.insert(arr[i]);
+    }
+
+    delete[] arr;
+}
+
 void Analyzer::analyze(TextReader &reader){
     int paragraphNumber = 1, sentenceNumber = 0, startingLine = 1;
     int stopWordsNum = 0, nonStopWords = 0, totalWordLength = 0, position = 0;
@@ -354,6 +383,8 @@ void Analyzer::analyze(TextReader &reader){
         paragraphExpressions.insert(currentExpressions);
         punctuationBalance.enqueue(currentStack);
     }
+
+    generateLengthDistribution();
 }
 
 HashTable<Token>& Analyzer::getTokens(){
@@ -376,4 +407,7 @@ Queue<Paragraph>& Analyzer::getParagraphs(){
 }
 Queue<Stack<char>>& Analyzer::getPunctuationBalance(){
     return punctuationBalance;
+}
+LinkedList<MapEntry>& Analyzer::getLengthDist(){
+    return lengthDist.getEntries();
 }

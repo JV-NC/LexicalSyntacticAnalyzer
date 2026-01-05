@@ -79,6 +79,24 @@ public:
 		}
 		size = 0;
 	}
+	T* toArray(int &outSize){
+		outSize = size;
+		if(outSize==0){
+			return nullptr;
+		}
+
+		T *arr = new T[outSize];
+
+		int i=0;
+		Node<T> *current = head;
+		while(current){
+			arr[i] = current->data;
+			current = current->next;
+			i++;
+		}
+		return arr;
+	}
+
 	class Iterator{
 	private:
 		Node<T> *current;
