@@ -3,16 +3,11 @@
 
 #include <ostream>
 #include "Analyzer.hpp"
-#include  "Sorter.hpp"
-#include "TokenComparators.hpp"
-#include "ExpressionComparators.hpp"
 
 class Report{
 private:
     Analyzer &analyzer;
     ostream &out;
-
-    Token* cloneArray(Token* src, int n);
 
     void printLine(char c, int n);
     void printTitle(const string &title);
@@ -28,6 +23,8 @@ private:
     void printLengthDist();
     void printSentenceStats();
     void printParagraphStats();
+
+    void exportSortMetricsCSV();
 
 public:
     Report(Analyzer &a, ostream &output);

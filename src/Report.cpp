@@ -1,14 +1,7 @@
 #include "../include/Report.hpp"
 #include <iomanip>
-//TODO: length distribution
-Report::Report(Analyzer &a, ostream &output): analyzer(a), out(output) {}
 
-Token* Report::cloneArray(Token* src, int n){
-    Token* dst = new Token[n];
-    for(int i = 0; i < n; i++)
-        dst[i] = src[i];
-    return dst;
-}
+Report::Report(Analyzer &a, ostream &output): analyzer(a), out(output) {}
 
 void Report::printLine(char c, int n){
     for(int i=0; i<n; i++)
@@ -266,22 +259,22 @@ void Report::printFullResultSortMetrics(HashTable<Token> &hash){
     string order[2] = {"Alphabetical","Frequency"};
 
     //MergeSortAlpha
-    arr = cloneArray(base, size);
+    arr = analyzer.cloneArray(base, size);
     Sorter<Token>::mergeSort(arr, size, tokenAlpha, metrics[0]);
     delete[] arr;
 
     //MergeSortFreq
-    arr = cloneArray(base, size);
+    arr = analyzer.cloneArray(base, size);
     Sorter<Token>::mergeSort(arr, size, tokenFreq, metrics[1]);
     delete[] arr;
 
     //QuickSortAlpha
-    arr = cloneArray(base, size);
+    arr = analyzer.cloneArray(base, size);
     Sorter<Token>::quickSort(arr, size, tokenAlpha, metrics[2]);
     delete[] arr;
 
     //QuickSortFreq
-    arr = cloneArray(base, size);
+    arr = analyzer.cloneArray(base, size);
     Sorter<Token>::quickSort(arr, size, tokenFreq, metrics[3]);
     delete[] arr;
 
@@ -297,7 +290,7 @@ void Report::printFullResultSortMetrics(HashTable<Token> &hash){
 
     for(int i=0; i<2; i++){
         for(int j=0; j<2;j++){
-            out<<left<<setw(25)<<alg[i%2]<<setw(20)<<order[j%2]<<setw(20)<<metrics[i*2+j].comparisons<<setw(20)<<metrics[i*2+j].swaps<<setw(20)<<metrics[i*2+j].elapsedTime<<endl;
+            out<<left<<setw(25)<<alg[i%2]<<setw(20)<<order[j%2]<<setw(20)<<metrics[i*2+j].comparisons<<setw(20)<<metrics[i*2+j].swaps<<setw(20)<<fixed<<setprecision(6)<<metrics[i*2+j].elapsedTime<<endl;
         }
     }
 
@@ -397,6 +390,26 @@ void Report::printParagraphStats(){
     out<<endl;
 }
 
+void Report::exportSortMetricsCSV(){
+    ofstream file("output/sort_metrics.csv");
+
+    file<<"algorithm,order,n,comparisons,swaps,time_s\n";
+
+    LinkedList<SortMetrics> metrics = analyzer.getBenchmarkMetrics();
+    LinkedList<int> tests = analyzer.getBenchmarkTests();
+
+    LinkedList<SortMetrics>::Iterator m = metrics.begin();
+    for(LinkedList<int>::Iterator t=tests.begin(); t!=tests.end(); t++){
+        for(int i=0;i<4;i++){
+            string alg = (i<2) ? "MergeSort" : "QuickSort";
+            string order = (i%2==0) ? "Alphabetical" : "Frequency";
+            file<<alg<<","<<order<<","<<(*t)<<","<<(*m).comparisons<<","<<(*m).swaps<<","<<(*m).elapsedTime<<endl;
+            ++m;
+        }
+    }
+    file.close();
+}
+
 void Report::generate(){
     printTitle("### START PROCESS ###");
 
@@ -409,4 +422,6 @@ void Report::generate(){
     printLengthDist();
 
     printTitle("### END PROCESS ###");
+
+    exportSortMetricsCSV();
 }

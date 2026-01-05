@@ -7,6 +7,12 @@ struct SortMetrics{
     double elapsedTime;
 
     SortMetrics(): comparisons(0), swaps(0), elapsedTime(0.0) {}
+
+    void clear() {
+        comparisons = 0;
+        swaps = 0;
+        elapsedTime = 0.0;
+    }
 };
 
 #endif

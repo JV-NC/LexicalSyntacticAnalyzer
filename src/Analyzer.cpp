@@ -229,6 +229,51 @@ void Analyzer::generateLengthDistribution(){
     delete[] arr;
 }
 
+void Analyzer::runSortingBenchmarks(){
+    int size;
+    Token *base = tokens.toArray(size);
+    Token *arr;
+    SortMetrics metrics;
+    if(!base || size==0)
+        return;
+
+    int tests[] = {100, 500, 1000, 5000, 10000, size};
+
+    for(int t=0;t<6;t++){
+        int n = tests[t];
+
+        if(n>size)
+            continue;
+
+        arr = cloneArray(base,n);
+        Sorter<Token>::mergeSort(arr,n,tokenAlpha,metrics);
+        benchmarkMetrics.insert(metrics);
+        delete[] arr;
+        metrics.clear();
+        
+
+        arr = cloneArray(base,n);
+        Sorter<Token>::mergeSort(arr,n,tokenFreq,metrics);
+        benchmarkMetrics.insert(metrics);
+        delete[] arr;
+        metrics.clear();
+
+        arr = cloneArray(base,n);
+        Sorter<Token>::quickSort(arr,n,tokenAlpha,metrics);
+        benchmarkMetrics.insert(metrics);
+        delete[] arr;
+        metrics.clear();
+
+        arr = cloneArray(base,n);
+        Sorter<Token>::quickSort(arr,n,tokenFreq,metrics);
+        benchmarkMetrics.insert(metrics);
+        delete[] arr;
+        metrics.clear();
+
+        benchmarkTests.insert(n);
+    }
+}
+
 void Analyzer::analyze(TextReader &reader){
     int paragraphNumber = 1, sentenceNumber = 0, startingLine = 1;
     int stopWordsNum = 0, nonStopWords = 0, totalWordLength = 0, position = 0;
@@ -385,6 +430,14 @@ void Analyzer::analyze(TextReader &reader){
     }
 
     generateLengthDistribution();
+    runSortingBenchmarks();
+}
+
+Token* Analyzer::cloneArray(Token* src, int n){
+    Token* dst = new Token[n];
+    for(int i = 0; i < n; i++)
+        dst[i] = src[i];
+    return dst;
 }
 
 HashTable<Token>& Analyzer::getTokens(){
@@ -410,4 +463,10 @@ Queue<Stack<char>>& Analyzer::getPunctuationBalance(){
 }
 LinkedList<MapEntry>& Analyzer::getLengthDist(){
     return lengthDist.getEntries();
+}
+LinkedList<SortMetrics>& Analyzer::getBenchmarkMetrics(){
+    return benchmarkMetrics;
+}
+LinkedList<int>& Analyzer::getBenchmarkTests(){
+    return benchmarkTests;
 }

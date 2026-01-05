@@ -13,6 +13,8 @@
 #include "IntIntMap.hpp"
 #include "Sorter.hpp"
 #include "MapEntryComparators.hpp"
+#include "TokenComparators.hpp"
+#include "ExpressionComparators.hpp"
 
 class Analyzer{
 private:
@@ -33,6 +35,9 @@ private:
 
     IntIntMap lengthDist;
 
+    LinkedList<SortMetrics> benchmarkMetrics;
+    LinkedList<int> benchmarkTests;
+
     void loadStopWords(const string &filename);
     void loadExpressions(const string &filename);
     void loadAbbreviations();
@@ -52,11 +57,14 @@ private:
     bool matches(char open, char close);
 
     void generateLengthDistribution();
+    void runSortingBenchmarks();
 
 public:
     Analyzer(const string &stopWordsFilename, const string &expressionsFilename);
 
     void analyze(TextReader &reader);
+
+    Token* cloneArray(Token* src, int n);
 
     HashTable<Token>& getTokens();
     LinkedList<HashTable<Token>>& getSentenceTokens();
@@ -66,6 +74,8 @@ public:
     Queue<Paragraph>& getParagraphs();
     Queue<Stack<char>>& getPunctuationBalance();
     LinkedList<MapEntry>& getLengthDist();
+    LinkedList<SortMetrics>& getBenchmarkMetrics();
+    LinkedList<int>& getBenchmarkTests();
 };
 
 #endif
