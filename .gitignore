@@ -2,3 +2,5 @@ bin
 output/output.txt
 obj
 output/*.csv
+output/*.png
+utils/__pycache__
