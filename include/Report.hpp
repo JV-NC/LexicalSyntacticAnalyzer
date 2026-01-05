@@ -25,6 +25,7 @@ private:
     void printParagraphStats();
 
     void exportSortMetricsCSV();
+    void exportLengthDist();
 
 public:
     Report(Analyzer &a, ostream &output);

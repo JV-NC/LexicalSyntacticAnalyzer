@@ -1,4 +1,4 @@
 bin
 output/output.txt
 obj
-output/sort_metrics.csv
+output/*.csv

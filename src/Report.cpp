@@ -410,6 +410,19 @@ void Report::exportSortMetricsCSV(){
     file.close();
 }
 
+void Report::exportLengthDist(){
+    ofstream file("output/length_dist.csv");
+
+    file<<"length,frequency\n";
+
+    LinkedList<MapEntry> lengthDist = analyzer.getLengthDist();
+    for(LinkedList<MapEntry>::Iterator it=lengthDist.begin(); it!=lengthDist.end(); it++){
+        file<<(*it).key<<","<<(*it).value<<endl;
+    }
+
+    file.close();
+}
+
 void Report::generate(){
     printTitle("### START PROCESS ###");
 
@@ -424,4 +437,5 @@ void Report::generate(){
     printTitle("### END PROCESS ###");
 
     exportSortMetricsCSV();
+    exportLengthDist();
 }
