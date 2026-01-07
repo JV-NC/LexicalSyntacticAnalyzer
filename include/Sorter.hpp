@@ -1,3 +1,8 @@
+/**
+ * @file Sorter.hpp
+ * @brief Defines Sorter class.
+ */
+
 #ifndef SORTER_HPP
 #define SORTER_HPP
 
@@ -7,13 +12,68 @@
 
 using namespace std;
 using Clock = chrono::high_resolution_clock;
-//TODO: docstring and comment all .hpp .cpp files
 
+/**
+ * @class Sorter
+ * @brief Generic sorting utility class implementing Merge Sort and Quick Sort.
+ *
+ * This class provides static implementations of Merge Sort and Quick Sort for generic arrays, while collecting performance metrics such as:
+ * - Number of comparisons
+ * - Number of swaps
+ * - Elapsed execution time
+ *
+ * @tparam T Type of elements to be sorted
+ * @see SortMetrics
+ */
 template<typename T>
 class Sorter{
-using Comparator = bool (*)(T&, T&, SortMetrics&);
+public:
+    /**
+     * @brief Comparator function type.
+     * The comparator must update the provided SortMetrics.
+     */
+    using Comparator = bool (*)(T&, T&, SortMetrics&);
+
+    /**
+     * @brief Sorts an array using Merge Sort.
+     *
+     * Complexity:
+     * Always O(n log n).
+     *
+     * @param arr Array to be sorted
+     * @param n Number of elements
+     * @param cmp Comparator function
+     * @param metrics Performance metrics output
+     */
+    static void mergeSort(T arr[], int n, Comparator cmp, SortMetrics &metrics){
+        auto start = Clock::now();
+        mergeSortRec(arr, 0, n - 1, cmp, metrics);
+        auto end = Clock::now();
+        metrics.elapsedTime = std::chrono::duration<double>(end - start).count();
+    }
+    
+    /**
+     * @brief Sorts an array using Quick Sort.
+     *
+     * Complexity:
+     * Average O(n log n), worst-case O(n**2).
+     *
+     * @param arr Array to be sorted
+     * @param n Number of elements
+     * @param cmp Comparator function
+     * @param metrics Performance metrics output
+     */
+    static void quickSort(T arr[], int n, Comparator cmp, SortMetrics &metrics){
+        auto start = Clock::now();
+        quickSortRec(arr, 0, n - 1, cmp, metrics);
+        auto end = Clock::now();
+        metrics.elapsedTime = std::chrono::duration<double>(end - start).count();
+    }
 private:
     //MERGESORT AUX
+    /**
+     * @brief Merges two sorted subarrays.
+     */
     static void merge(T arr[], int left, int mid, int right, Comparator cmp, SortMetrics &metrics){
         int n1 = mid - left + 1;
         int n2 = right - mid;
@@ -42,6 +102,9 @@ private:
         delete[] L;
         delete[] R;
     }
+    /**
+     * @brief Recursive Merge Sort implementation.
+     */
     static void mergeSortRec(T arr[], int left, int right, Comparator cmp, SortMetrics &metrics){
         if(left < right){
             int mid = (left + right) / 2;
@@ -52,6 +115,9 @@ private:
     }
     
     //QUICKSORT AUX
+    /**
+     * @brief Partition function used by Quick Sort.
+     */
     static int partition(T arr[], int low, int high, Comparator cmp, SortMetrics &metrics){
         T pivot = arr[high];
         int i = low - 1;
@@ -73,28 +139,15 @@ private:
 
         return i + 1;
     }
+    /**
+     * @brief Recursive Quick Sort implementation.
+     */
     static void quickSortRec(T arr[], int low, int high, Comparator cmp, SortMetrics &metrics){
         if(low < high){
             int pi = partition(arr, low, high, cmp, metrics);
             quickSortRec(arr, low, pi - 1, cmp, metrics);
             quickSortRec(arr, pi + 1, high, cmp, metrics);
         }
-    }
-public:
-    //MERGESORT
-    static void mergeSort(T arr[], int n, Comparator cmp, SortMetrics &metrics){
-        auto start = Clock::now();
-        mergeSortRec(arr, 0, n - 1, cmp, metrics);
-        auto end = Clock::now();
-        metrics.elapsedTime = std::chrono::duration<double>(end - start).count();
-    }
-    
-    //QUICKSORT
-    static void quickSort(T arr[], int n, Comparator cmp, SortMetrics &metrics){
-        auto start = Clock::now();
-        quickSortRec(arr, 0, n - 1, cmp, metrics);
-        auto end = Clock::now();
-        metrics.elapsedTime = std::chrono::duration<double>(end - start).count();
     }
 };
 

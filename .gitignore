@@ -4,3 +4,5 @@ obj
 output/*.csv
 output/*.png
 utils/__pycache__
+html
+latex
