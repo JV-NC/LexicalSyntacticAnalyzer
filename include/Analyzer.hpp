@@ -161,16 +161,25 @@ public:
      */
     Token* cloneArray(Token* src, int n);
 
-    /** Getters */
+    /** @return Reference to the HashTable containing all tokens. */
     HashTable<Token>& getTokens();
+    /** @return Reference to a LinkedList of HashTable<Token>, one per sentence. */
     LinkedList<HashTable<Token>>& getSentenceTokens();
+    /** @return Reference to the HashTable of all expressions. */
     HashTable<Expression>& getAllExpressions();
+    /** @return Reference to a LinkedList of HashTable<Expression>, one per paragraph. */
     LinkedList<HashTable<Expression>>& getParagraphExpressions();
+    /** @return Reference to the Queue of Sentence objects. */
     Queue<Sentence>& getSentences();
+    /** @return Reference to the Queue of Paragraph objects. */
     Queue<Paragraph>& getParagraphs();
+    /** @return Reference to a Queue of Stack<char> representing punctuation balance. */
     Queue<Stack<char>>& getPunctuationBalance();
+    /** @return Reference to a LinkedList of MapEntry objects representing (length, frequency) pairs. */
     LinkedList<MapEntry>& getLengthDist();
+    /** @return Reference to a LinkedList of SortMetrics objects. */
     LinkedList<SortMetrics>& getBenchmarkMetrics();
+    /** @return Reference to a LinkedList of integers representing test sizes. */
     LinkedList<int>& getBenchmarkTests();
 };
 

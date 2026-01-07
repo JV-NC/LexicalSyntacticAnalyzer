@@ -39,9 +39,11 @@ public:
      */
     void addOccurrence(int line);
 
-    /** Getters */
+    /** @return Expression text. */
     string getText();
+    /** @return Expression frequency. */
     int getFrequency();
+    /** @return Reference to the list of lines. */
     LinkedList<int>& getLines();
 };
 
