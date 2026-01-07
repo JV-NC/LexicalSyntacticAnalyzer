@@ -1,3 +1,8 @@
+/**
+ * @file Expression.hpp
+ * @brief Defines the Expression class.
+ */
+
 #ifndef EXPRESSION_HPP
 #define EXPRESSION_HPP
 
@@ -5,21 +10,36 @@
 #include "LinkedList.hpp"
 
 using namespace std;
-
+/**
+ * @class Expression
+ * @brief Represents a multi-word expression found in the text.
+ */
 class Expression{
 private:
+    /** Expression text */
     string text;
+    /** Number of occurrences */
     int frequency;
+    /** Line numbers where the expression appears */
     LinkedList<int> lines;
 
 public:
-    Expression(); //standard constructor
-    Expression(const string &t); //normal constructor
-    Expression(const Expression &other); //copy constructor
+    /** Default constructor */
+    Expression();
+    /** Constructs an expression with given text */
+    Expression(const string &t);
+    /** Copy constructor */
+    Expression(const Expression &other);
+    /** Assignment operator */
     Expression& operator=(const Expression& other);
 
+    /**
+     * @brief Adds new occurence.
+     * @param line Line of the new occurence.
+     */
     void addOccurrence(int line);
 
+    /** Getters */
     string getText();
     int getFrequency();
     LinkedList<int>& getLines();
