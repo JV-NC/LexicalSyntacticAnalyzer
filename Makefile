@@ -4,17 +4,26 @@
 INPUT ?= data/DomCasmurro.txt
 
 # ===============================
+# Virtual Environment
+# ===============================
+VENV_DIR = venv
+
+# ===============================
 # System
 # ===============================
 ifeq ($(OS),Windows_NT)
     TARGET = LSA.exe
-    PYTHON = python
+    PYTHON_SYS = python
+    PYTHON = $(VENV_DIR)/Scripts/python
+    PIP = $(PYTHON) -m pip
     RM = rmdir /S /Q
     MKDIR = mkdir
     SEP = \\
 else
     TARGET = LSA
-    PYTHON = python3
+    PYTHON_SYS = python3
+    PYTHON = $(VENV_DIR)/bin/python
+    PIP = $(PYTHON) -m pip
     RM = rm -rf
     MKDIR = mkdir -p
     SEP = /
@@ -77,9 +86,17 @@ run: all
 	./$(BIN_DIR)/$(TARGET) $(INPUT)
 
 # ===============================
+# Virtual Environment Setup
+# ===============================
+venv:
+	$(PYTHON_SYS) -m venv $(VENV_DIR)
+	$(PIP) install --upgrade pip
+	$(PIP) install -r requirements.txt
+
+# ===============================
 # Generate plots
 # ===============================
-plots: run
+plots: venv run
 	$(PYTHON) $(UTILS_DIR)$(SEP)plot_length_dist.py
 	$(PYTHON) $(UTILS_DIR)$(SEP)plot_sort_metrics.py
 
@@ -91,13 +108,14 @@ ifeq ($(OS),Windows_NT)
 	@if exist $(OBJ_DIR) $(RM) $(OBJ_DIR)
 	@if exist $(BIN_DIR) $(RM) $(BIN_DIR)
 	@if exist $(OUT_DIR) $(RM) $(OUT_DIR)
+	@if exist $(VENV_DIR) $(RM) $(VENV_DIR)
 else
-	$(RM) $(OBJ_DIR) $(BIN_DIR) $(OUT_DIR)
+	$(RM) $(OBJ_DIR) $(BIN_DIR) $(OUT_DIR) $(VENV_DIR)
 endif
 
 # ===============================
 # Execute all
 # ===============================
-full: clean run plots
+full: clean plots
 
-.PHONY: all run plots full clean dirs
+.PHONY: all run plots full clean dirs venv
