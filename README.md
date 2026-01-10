@@ -103,6 +103,7 @@ CEFET-MG Campus V <br>
     * [Compilação](#compilação)
     * [Execução](#execução)
     * [Geração de Gráficos](#geração-de-gráficos)
+  * [💻 Como Criar a Documentação Doxygen](#-como-criar-a-documentação-doxygen)
   * [👤 Autoria](#-autoria)
     * [Autor do Projeto](#autor-do-projeto)
     * [Estatísticas do Repositório](#estatísticas-do-repositório)
@@ -1305,6 +1306,18 @@ Os experimentos apresentados na Seção de Resultados foram executados em um amb
 |Sistema Operacional|Windows 10 22H2|
 |Compilador|GCC 6.3.0|
 > **Tabela 4 - Especificações do hardware utilizado nos experimentos.**
+
+---
+## 💻 Como Criar a Documentação Doxygen
+Garanta que tenha o Doxygen instalado:
+```bash
+sudo apt install doxygen
+```
+No diretório raiz do projeto, execute:
+```bash
+doxygen Doxyfile
+```
+A página inicial pode ser acessada pelo arquivo `html/index.html` gerado.
 
 ----
 ## 👤 Autoria
