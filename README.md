@@ -911,4 +911,142 @@ Script responsável por gerar gráficos de **desempenho dos algoritmos de ordena
 Esses gráficos permitem avaliar empiricamente o comportamento dos algoritmos em diferentes tamanhos de entrada.
 
 ---
-## 🏁 Resultados e Conclusão
+## 🧮 Resultados
+Essa seção apresenta os principais resultados obtidos a partir da execução do Analisador Léxico-Sintático, considerando o arquivo de entrada de exemplo ``data/Semana_Machado_Assis.txt``.
+### Exemplo de saída do analisador
+O arquivo `output/output.txt` contém o relatório textual completo gerado pelo sistema. Segue uma parte da saída para o texto ``data/Semana_Machado_Assis.txt``:
+```
+======================================================================================================================================================
+=>                                                                ### START PROCESS ###
+
+======================================================================================================================================================
+======================================================================================================================================================
+=>                                                                ### PARTIAL RESULT ###
+
+======================================================================================================================================================
+______________________________________________________________________________________________________________________________________________________
+WORD                     FREQUENCY      PARAGRAPH      SENTENCE       LINE           POSITIONS
+------------------------------------------------------------------------------------------------------------------------------------------------------
+assis                    1              1              1              1              9 
+completa                 1              1              1              1              5 
+machado                  1              1              1              1              7 
+obra                     1              1              1              1              4 
+semana                   1              1              1              1              2 
+texto-fonte              1              1              1              1              3 
+______________________________________________________________________________________________________________________________________________________
+=> Number of words with stop words: 9                                                           => Number of words without stop words: 6
+------------------------------------------------------------------------------------------------------------------------------------------------------
+______________________________________________________________________________________________________________________________________________________
+=> Balanced symbols: YES
+------------------------------------------------------------------------------------------------------------------------------------------------------
+______________________________________________________________________________________________________________________________________________________
+=> Beginning paragraph in line: 1  Number of sentences: 1
+______________________________________________________________________________________________________________________________________________________
+
+...
+
+______________________________________________________________________________________________________________________________________________________
+DISTINCT VOCABULARY SIZE: 24721 WORDS
+------------------------------------------------------------------------------------------------------------------------------------------------------
+______________________________________________________________________________________________________________________________________________________
+TOP 10 MOST FREQUENT WORDS
+WORD                FREQUENCY   
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ainda               629
+tudo                563
+pode                548
+outro               475
+homem               471
+todos               455
+assim               454
+outra               437
+aqui                421
+outros              419
+______________________________________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________________________________
+TOP 10 LEAST FREQUENT WORDS
+WORD                FREQUENCY   
+------------------------------------------------------------------------------------------------------------------------------------------------------
+repetirei           1
+desazo              1
+refuta              1
+esfriaras           1
+agasalhar           1
+di-lo               1
+personalidades      1
+apaga               1
+restante            1
+birmingham          1
+______________________________________________________________________________________________________________________________________________________
+
+...
+```
+**Exemplo de saída de output.txt**
+
+### Distribuição por comprimento das palavras
+A distribuição do comprimento das palavras foi obtida a partir do arquivo ``length_dist.csv`` e visualizada no gráfico apresentado abaixo, armazenado no diretório `assets`.
+![Distribuição por comprimento](assets/length_distribution.png)
+**Distribuição por comprimento para `data/Semana_Machado_Assis.txt`**
+É notável que a maioria das palavras do texto estão com comprimento em torno de 5 caractéres, o que é aceitável para lingua portuguesa.
+### Desempenho dos algoritmos de ordenação
+O desempenho dos algoritmos MergeSort e QuickSort foi avaliado considerando dois critérios de ordenação:
+* Ordem alfabética;
+* Ordem por frequência.
+As métricas analisadas foram:
+* Tempo de execução (em segundos);
+* Número de comparações;
+* Número de trocas (swaps).
+Os resultados estão novamente no diretório `assets`.
+#### Tempo de execução
+![Performance tempo](assets/sort_performance_time.png)
+Percebe-se que o tempo do QuickSort por frequência tem um aumento brusco para $n\approx 25000$, provavelmente resultado de pivos ruins de partição.
+#### Comparações e trocas
+![Performance comparações](assets/sort_performance_comparisons.png)
+Nas comparações, nota-se que o QuickSort por frequência novamente tem um estouro de comparações em relação aos outros algoritmos, isso pode ser devido a grande quantidade de chaves com mesmo valor (palavras com a mesma frequência), o que causa esse comportamento descontrolado do QuickSort.
+![Performance trocas](assets/sort_performance_swaps.png)
+No caso de trocas, ocorre o efeito contrário, pois devido a várias palavras terem a mesma frequência, o algoritmo do QuickSort consegue melhor desempenho graças a sua adaptabilidade (capacidade de melhorar o desempenho caso a estrutura já esteja parcialmente ordenada).
+### Comparação com análise assintótica
+A análise de desempenho dos algoritmos de ordenação considerou tanto os tempos de execução observados experimentalmente quanto o comportamento assintótico esperado para cada método. Conforme definido no arquivo de `prática.pdf`, o custo teórico pode ser modelado por:
+$$T(n)=c_1\times nlog(n)+c_2\times n+O(1)$$
+onde as constantes $c_1$ e $c_2$ dependem das operações elementares realizadas, como comparações e trocas, além das características do hardware utilizado.
+A fim de estimar o valor dessas constantes para comparar com o valores obtidos da execução, aproximou-se a formula para:
+$$T(n)\approx c_1\times log_2(n)$$
+pois $O(1)$ é desprezível para grandes valore de $n$ e as comparações são o maior custo. Ao utilizar o ponto experimental de $n\approx 25000$, obtém-se uma estimativa para $c_1$:
+MergeSort (ordem alfabética, $n=24721$)
+* $n=24721$
+* $T_{real} = 0.504115 \; s$ 
+* $log_2(24721)\approx 14.6$
+$$n\;log_2\;n\approx 24721\times 14.6 \approx 360927$$
+Logo:
+$$c_1 \approx \frac{T{real}}{n\; log\; n} = \frac{0.504115}{360927} \approx \boxed{1.4\times 10^{-6}}$$
+Usando esse $c_1$ para o MergeSort alfabético:
+
+|$n$|$n\; log\; n$|$T_{teórico}(s)$|$T_{real}(s)$|
+|-|-|-|-|
+|$1000$|$9966$|$0.014$|$0.016$|
+|$5000$|$61440$|$0.086$|$0.096$|
+|$10000$|$132880$|$0.186$|$0.197$|
+|$24721$|$360927$|$0.505$|$0.504$|
+
+**Tabela de aproximação do tempo assintótico do MergeSort alfabético.**
+A partir dessa tabela, nota-se que os valores de $T_{teórico}(s)$ se aproximam consideravelmente do tempo $T_{real}(s)$.
+
+Já para o QuickSort por frequência, encontra essa relação:
+|$n$|Comparações|
+|-|-|
+|$5000$|$3683894$|
+|$10000$|$14768827$|
+|$24721$|$91232211$|
+
+E considerando o crescimento:
+* $5k \to 10k \approx 4.0$
+* $10k \to 24k \approx 6.177$
+
+Encontra-se um comportamento mais próximo de $n^2$ do que $n\;log\;n$. Como havia mencionado anteriormente, isso pode ser causado por muitas frequências iguais e o QuickSort implementado não usa mediana de três, causando um $T(n)\approx c\times n^2$, mesmo que o tempo de execução seja aceitável, o número de comparações explode, confirmando o pior caso teórico.
+
+## 🏁 Conclusão
+A execução do Analisador Léxico-Sintático sobre o arquivo `data/Semana_Machado_Assis.txt` permitiu avaliar, de forma prática e quantitativa, tanto a qualidade da análise textual quanto o desempenho dos algoritmos de ordenação aplicados ao processamento dos dados léxicos. O relatório gerado em `output/output.txt` evidencia a correta extração de informações como frequência de palavras, distribuição por sentenças e parágrafos, vocabulário distinto e verificação de balanceamento de símbolos, confirmando a eficácia das estruturas de dados desenvolvidas.
+O elevado tamanho do vocabulário distinto (24 721 palavras) confirma a riqueza lexical do texto analisado, característica esperada de uma obra literária extensa. A distribuição por comprimento das palavras, obtida a partir de `length_dist.csv`, apresentou concentração em torno de palavras com aproximadamente cinco caracteres, com decaimento gradual para comprimentos maiores, comportamento coerente com a língua portuguesa e indicativo do correto funcionamento do processo de tokenização e agrupamento estatístico.
+Quanto ao desempenho dos algoritmos de ordenação, os resultados experimentais foram analisados à luz do modelo assintótico, permitindo comparar os tempos medidos com os tempos teóricos estimados. Para o MergeSort, observou-se forte aderência ao comportamento ($O(n \log n)$) em todos os cenários, com crescimento estável do tempo de execução e boa aproximação entre valores empíricos e teóricos, evidenciando sua previsibilidade e robustez.
+Em contrapartida, o QuickSort apresentou desempenho dependente do critério de ordenação. Na ordenação alfabética, o comportamento manteve-se próximo do caso médio ($O(n \log n)$); entretanto, na ordenação por frequência, verificou-se aumento significativo no número de comparações para grandes valores de ($n$), aproximando-se do pior caso ($O(n^2)$). Esse efeito está associado à alta incidência de frequências repetidas e à ausência da estratégia de mediana de três, resultando em partições desbalanceadas.
+Dessa forma, os resultados práticos corroboram a análise assintótica clássica: o MergeSort mostrou-se mais adequado ao contexto da análise textual, caracterizado por grandes volumes de dados e muitas chaves repetidas, enquanto o QuickSort apresentou melhor desempenho em situações favoráveis, porém com maior sensibilidade à distribuição dos dados. O trabalho, portanto, atingiu seus objetivos ao integrar análise léxico-sintática, avaliação experimental de algoritmos e comparação com modelos teóricos de tempo de execução.
