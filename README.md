@@ -21,10 +21,95 @@ CEFET-MG Campus V <br>
 2026/1  
 </div>
 
+---
 <details>
 <summary><h2>📋 Índice</h2></summary>
+
+* [🔍 Analisador Léxico-Sintático](#-analisador-léxico-sintático)
+  * [📝 Introdução](#-introdução)
+  * [🎯 Objetivos](#objetivos)
+    * [Objetivo Geral](#objetivo-geral)
+    * [Objetivos Específicos](#objetivos-específicos)
+  * [📚 Fundamentação Teórica](#-fundamentação-teórica)
+    * [Análise Léxica](#análise-léxica-scanner)
+    * [Análise Sintática](#análise-sintática-parser)
+    * [Pilhas](#pilhas-stacks)
+    * [Filas](#filas-queues)
+    * [Listas Encadeadas](#listas-encadeadas-linked-lists)
+    * [Tabelas Hash](#tabelas-hash-hash-tables)
+    * [Mapas Associativos](#mapas-associativos)
+    * [Algoritmos de Ordenação](#algoritmos-de-ordenação)
+      * [MergeSort](#merge-sort)
+      * [QuickSort](#quick-sort)
+    * [MergeSort X QuickSort](#merge-sort-x-quick-sort)
+  * [🔬 Modelagem da Aplicação](#-modelagem-da-aplicação)
+    * [Fluxo de Execução do Sistema](#fluxo-de-execução-do-sistema)
+    * [📊 Estruturas de Dados](#-estruturas-de-dados)
+    * [🚀 Otimizações Propostas](#-otimizações-propostas)
+    * [Pré-processamento Textual](#pré-processamento-textual)
+    * [Uso de Hashing](#uso-de-hashing)
+    * [Análise Empírica de Ordenação](#análise-empírica-de-ordenação)
+  * [📝 Metodologia](#-metodologia)
+    * [📁 Estrutura do Projeto](#-estrutura-do-projeto)
+    * [📁 Arquivos e Diretórios](#-arquivos-e-diretórios)
+    * [📚 Bibliotecas](#-bibliotecas)
+    * [📌 Bibliotecas do Projeto (Headers Customizados)](#-bibliotecas-do-projeto-headers-customizados)
+    * [📌 Bibliotecas Padrão do C++](#-bibliotecas-padrão-do-c)
+  * [⚙️ Estruturas de Dados e Implementação do Sistema](#️-estruturas-de-dados-e-implementação-do-sistema)
+    * [🧱 Estruturas Base do Sistema](#-estruturas-base-do-sistema)
+      * [`struct Occurrence`](#struct-occurrence)
+      * [`class Token`](#class-token)
+      * [`class Sentence`](#class-sentence)
+      * [`class Paragraph`](#class-paragraph)
+      * [`class Expression`](#class-expression)
+    * [🧱 Estruturas de Dados Genéricas](#-estruturas-de-dados-genéricas)
+      * [`struct Node<T>`](#struct-nodet)
+      * [`class Stack<T>`](#class-stackt)
+      * [`class Queue<T>`](#class-queuet)
+      * [`class LinkedList<T>`](#class-linkedlistt)
+      * [`class HashTable<T>`](#class-hashtablet)
+    * [🗺️ Estruturas Auxiliares de Mapeamento](#️-estruturas-auxiliares-de-mapeamento)
+      * [`struct MapEntry`](#struct-mapentry)
+      * [`class IntIntMap`](#class-intintmap)
+    * [🔀 Estruturas de Comparação e Ordenação](#-estruturas-de-comparação-e-ordenação)
+      * [Funções de Comparação para `Expression`](#funções-de-comparação-para-expression-expressioncomparatorshpp)
+      * [Funções de Comparação para `Token`](#funções-de-comparação-para-token-tokencomparatorshpp)
+      * [Funções de Comparação para `MapEntry`](#funções-de-comparação-para-mapentry-mapentrycomparatorshpp)
+      * [`struct SortMetrics`](#struct-sortmetrics)
+      * [`class Sorter<T>`](#class-sortert)
+    * [📖 Leitura de Texto e Análise Léxico-Sintática](#-leitura-de-texto-e-análise-léxico-sintática)
+      * [`class TextReader`](#class-textreader)
+      * [ `class Analyzer`](#class-analyzer)
+    * [📜 Saídas do Algoritmo](#-saídas-do-algoritmo)
+      * [`class Report`](#class-report)
+      * [Função `main`](#função-main)
+    * [📊 Scripts em Python](#-scripts-em-python)
+      * [`plot_utils.py`](#plot_utilspy)
+      * [`plot_length_dist.py`](#plot_length_distpy)
+      * [`plot_sort_metrics.py`](#plot_sort_metricspy)
+  * [🧮 Resultados](#-resultados)
+    * [Exemplo de Saída do Analisador](#exemplo-de-saída-do-analisador)
+    * [Distribuição por comprimento das palavras](#distribuição-por-comprimento-das-palavras)
+    * [Desempenho dos algoritmos de ordenação](#desempenho-dos-algoritmos-de-ordenação)
+      * [Tempo de Execução](#tempo-de-execução)
+      * [Comparações e trocas](#comparações-e-trocas)
+    * [Comparação com análise assintótica](#comparação-com-análise-assintótica)
+  * [🏁 Conclusão](#-conclusão)
+  * [🖥️ Hardware Utilizado](#️-hardware-utilizado)
+  * [🔧 Configuração do Ambiente](#-configuração-do-ambiente)
+  * [💻 Como Compilar e Executar](#-como-compilar-e-executar)
+    * [Clone do Repositório](#clone-do-repositório)
+    * [Pré-requisitos](#pré-requisitos)
+    * [Compilação](#compilação)
+    * [Execução](#execução)
+    * [Geração de Gráficos](#geração-de-gráficos)
+  * [👤 Autoria](#-autoria)
+    * [Autor do Projeto](#autor-do-projeto)
+    * [Estatísticas do Repositório](#estatísticas-do-repositório)
+  * [📚 Referências](#-referências)
 </details>
 
+---
 ## 📝 Introdução
 
 Este projeto foi desenvolvido como trabalho de aproveitamento da disciplina de Laboratório de Algorítmos e Estruturas de Dados I (LAEDI), sob a orientação do professor [Michel Pires Silva](https://github.com/mpiress). Este trabalho tem como objetivo principal o desenvolvimento de um sistema denominado Analisador Léxico-Sintático (LSA), capaz de avaliar diferentes métricas associadas à qualidade textual.
@@ -33,6 +118,7 @@ O LSA é responsável por processar um texto de entrada e extrair informações 
 * Pilhas (Stack).
 * Filas (Queue).
 * Tabelas hash (HashTable).
+
 Todas as estruturas foram implementadas durante o projeto, sem o uso de bibliotecas prontas da Standard Template Library (STL), respeitando as restrições e objetivos didáticos da disciplina aproveitada.
 Durante o processamento do texto, o sistema realiza diversas tarefas, entre elas:
 * Contagem da frequência de palavras e expressões.
@@ -41,19 +127,23 @@ Durante o processamento do texto, o sistema realiza diversas tarefas, entre elas
 * Verificação do balanceamento de símbolos de pontuação.
 * Geração de estatísticas por sentença e por parágrafo.
 * Construção da distribuição de comprimento das palavras.
+
 Além disso, o sistema incorpora análise de desempenho de algoritmos de ordenação, comparando *MergeSort* e *QuickSort* usando diferentes comparadores e variáveis de ordenação. Para cada algoritmo, são coletadas as seguintes métricas:
 * Número de comparações
 * Número de trocas
 * Tempo de execução
+
 Esses dados e a distribuição por comprimento são exportados no formato `.csv` e posteriormente utilizados para plotagem de gráficos com scripts em Python.
 Como parte da automação do projeto, foi desenvolvido pensando na execução em *pipeline* a partir do Makefile, tendo a seguinte ordem:
 1. Compilação e criação dos objetos (.o) do código em C++.
 2. Execução do analisador sobre o texto de entrada.
 3. Geração do ``output.txt`` e dos arquivos `.csv`.
 4. Plotagem dos gráficos utilizando ``pandas`` e ``matplolib`` em Python.
+
 Os textos utilizados para testar e analisar o projeto foram Dom Casmurro e a Semana Machado de Assis, ambas obras de Machado de Assis, oferecidas inicialmente para o trabalho de aproveitamento. Estes materiais foram selecionados devido ao tamanho textual e riqueza linguística, possibilitando executar o sistema em um cenário realista e desafiador para análise.
 Com este trabalho, busca-se consolidar os conceitos fundamentais da disciplina de LAEDI, demonstrando o conhecimento do autor sobre a disciplina em uma aplicação real, mensurável e extensível.
 
+---
 ## 🎯Objetivos
 
 ### Objetivo Geral
@@ -88,29 +178,35 @@ A avaliação do sistema desenvolvido considera os seguintes critérios:
 * **Documentar o projeto com Doxygen:**
   Produzir documentação técnica completa do código-fonte, incluindo descrição de classes, métodos, parâmetros e estruturas de dados utilizadas.
 
+---
 ## 📚 Fundamentação Teórica
 O desenvolvimento de um sistema de análise textual eficiente exige a aplicação integrada de conceitos clássicos de estruturas de dados, algoritmos de ordenação e processamento de texto. Este trabalho fundamenta-se nesses pilares para realizar a leitura, organização, análise estatística e apresentação de informações extraídas de textos extensos, respeitando critérios de desempenho e uso eficiente de memória.
 
 A seguir, são apresentados os principais conceitos teóricos que embasam a implementação do sistema proposto.
 
+---
 ### Análise léxica (Scanner)
 É o processo de decompor um texto ou código-fonte em unidades mínimas e significativas, denominadas *tokens* que são usadas fundamentalmente em compiladores, interpretadores e em processamento de linguagem natural (PLN), para entender a estrutura e significado da entrada.
 
+---
 ### Análise sintática (Parser)
 Tem como função receber os tokens do analisador léxico e verificar se eles formam uma estrutura gramaticalmente correta, de acordo com as regras da linguagem. Também são fundamentais para compiladores e PLN.
 
+---
 ### Pilhas (Stacks)
 A pilha é uma estrutura de dados baseada no princípio FILO (First In, Last Out). Os elementos são inseridos e removidos sempre pelo topo.
 Neste projeto, pilhas são usadas para:
 * Verificar o balanceamento de símbolos de pontuação, como parênteses, colchetes e chaves;
 * Garantir a correta correspondência entre símbolos de abertura e fechamento.
 
+---
 ### Filas (Queues)
 A fila segue o princípio FIFO (First In, First Out), em que o primeiro elemento inserido (enqueue) é o primeiro a ser removido (dequeue).
 As filas são empregadas para:
 * Armazenar sentenças e parágrafos na ordem em que aparecem no texto;
 * Garantir o processamento sequencial correto das estruturas textuais.
 
+---
 ### Listas Encadeadas (Linked Lists)
 As listas encadeadas permitem inserção e remoção dinâmica de elementos, sem necessidade de realocação contínua de memória. Cada elemento aponta para o próximo, formando uma sequência encadeada.
 No contexto deste projeto, as listas encadeadas são utilizadas para:
@@ -118,6 +214,7 @@ No contexto deste projeto, as listas encadeadas são utilizadas para:
 * Registrar ocorrências (linhas, posições, sentenças);
 * Servir como base para estruturas mais complexas.
 
+---
 ### Tabelas Hash (Hash Tables)
 Tabelas hash são estruturas de dados que permitem acesso rápido a elementos por meio de uma função de dispersão (hash function). Elas oferecem, em média, complexidade de tempo constante para inserção, busca e remoção. A resolução de colisões é feita por encadeamento, utilizando listas encadeadas nos buckets da tabela.
 No projeto, tabelas hash são utilizadas para:
@@ -126,14 +223,18 @@ No projeto, tabelas hash são utilizadas para:
 * Evitar duplicação de entradas;
 * Facilitar consultas rápidas por texto.
 
+---
 ### Mapas Associativos
 Mapas associativos permitem relacionar chaves a valores. Neste trabalho, foi implementado um mapa específico de inteiros (`IntIntMap`) sem o uso da biblioteca padrão STL.
 Esse mapa é utilizado para:
 * Construir a distribuição de comprimento das palavras;
 * Associar o tamanho da palavra à sua frequência de ocorrência.
 
+---
 ### Algoritmos de Ordenação
 A ordenação dos dados é essencial para a apresentação organizada dos resultados e para análises comparativas de desempenho.
+
+---
 #### Merge Sort
 O Merge Sort é um algoritmo de ordenação baseado na estratégia "dividir para conquistar". Ele divide o vetor em partes menores, ordena cada parte e, em seguida, realiza a fusão ordenada.
 Características:
@@ -142,6 +243,8 @@ Características:
 * Custo adicional de memória para copiar o vetor.
 * Não há melhora se os elementos já estiverem parcialmente ordenados.
 * Não faz troca de elementos, pois eles se ordenam quando as partes se fundem (merge).
+
+---
 #### Quick Sort
 O Quick Sort também segue a estratégia de "dividir para conquistar", escolhendo um pivô e particionando o vetor em elementos menores e maiores que ele.
 Características:
@@ -149,6 +252,8 @@ Características:
 * Pior caso: $$O(n^2)$$
 * Instável, pode alterar a ordem dos elementos de mesmo valor.
 * Custo de memória extra relacionado a recursão na pilha.
+
+---
 #### Merge Sort X Quick Sort
 |Característica|**MergeSort**| **QuickSort**|
 |-|-|-|
@@ -160,14 +265,15 @@ Características:
 |**Adapatabilidade**|Não|Sim|
 |**Memória extra**|$$O(n)$$|$$O(log\;n)$$|
 |**Movimentações (Swaps)**|$$O(n\;log\;n)$$|$$O(n\;log\;n)$$|
+> **Tabela 1 - Comparativo das caracteriscas do Merge Sort e do Quick Sort.**
 
-**Tabela comparativa das caracteriscas do Merge Sort e do Quick Sort**
-
+---
 ## 🔬 Modelagem da Aplicação
 A partir do objetivo de desenvolver um sistema analisador léxico-sintático, a modelagem teve como princípio equilibrar o desempenho computacional com a construção de um sistema robusto e modular. O projeto foi implementado em C++, visando eficiência computacional, controle explícito de memória e flexibilidade na implementação de estruturas personalizadas com POO.
 
 A arquitetura do sistema segue uma abordagem modular, na qual cada componente possui responsabilidades bem definidas, facilitando tanto a manutenção quanto a análise individual de desempenho. O fluxo geral da aplicação é coordenado pela função `main`, que orquestra a leitura do texto, a análise léxica, o armazenamento dos dados e a geração dos relatórios e métricas experimentais.
 
+---
 ### Fluxo de Execução do Sistema
 O funcionamento do analisador pode ser dividido em etapas sequenciais, que refletem o *pipeline* de processamento textual adotado no projeto:
 1. **Leitura do Texto de Entrada**
@@ -209,6 +315,7 @@ Essa separação permite o desenvolvimento e teste modular da aplicação, além
 
 **Fluxograma de execução do projeto.**
 
+---
 ### 📊 Estruturas de Dados
 
 O projeto faz uso extensivo de estruturas de dados implementadas manualmente, evitando o uso direto de containers prontos da STL para fins educacionais. Entre as principais estruturas utilizadas, destacam-se:
@@ -230,6 +337,7 @@ O projeto faz uso extensivo de estruturas de dados implementadas manualmente, ev
 
 Essas estruturas foram projetadas visando clareza conceitual, eficiência e integração com os algoritmos de ordenação e análise estatística.
 
+---
 ### 🚀 Otimizações Propostas
 
 #### Pré-processamento Textual
@@ -248,9 +356,11 @@ Essas estruturas foram projetadas visando clareza conceitual, eficiência e inte
 * Comparação entre MergeSort e QuickSort sob diferentes critérios de ordenação;
 * Coleta detalhada de métricas para validação empírica das complexidades assintóticas esperadas.
 
+---
 ## 📝 Metodologia
 A implementação do sistema de análise léxica e sintática foram feitas em C++, uitilizando a IDE Visual Studio Code para desenvolvimento do código-fonte e uso do Github para controle de versão. O projeto foi organizado em um repositório, contendo diretórios dividindo os arquivos de cabeçalho (.hpp) em ``include``, arquivos de implementação (.cpp) em ``src``, arquivos de entrada em ``data``, scripts em Python no diretório ``utils``, diretório de saída ``output``, além de outros diretórios auxiliares.
 
+---
 ## 📁 Estrutura do Projeto
 A seguir, a estrutura do diretório do projeto, organizada para separar o código-fonte, os dados e os resultados:
 ```
@@ -319,6 +429,8 @@ A seguir, a estrutura do diretório do projeto, organizada para separar o códig
 ├── Makefile
 └── README.md
 ```
+
+---
 ### 📁 Arquivos e Diretórios
 A seguir, são descritos os principais arquivos e diretórios do projeto, detalhando suas responsabilidades no processo de análise léxica e sintática.
 * **`bin/`**
@@ -347,9 +459,11 @@ A seguir, são descritos os principais arquivos e diretórios do projeto, detalh
   * `plot_sort_metrics.py`: gera gráficos comparativos de desempenho dos algoritmos de ordenação.
   * `plot_utils.py`: funções auxiliares comuns aos scripts de plotagem.
 
+---
 ### 📚 Bibliotecas
 A implementação do Analisador Léxico e Sintático não utiliza das estruturas de dados do STL, porém utiliza de outras bibliotecas padrões do C++. As principais bibliotecas são:
 
+---
 ### 📌 Bibliotecas do Projeto (Headers Customizados)
 Os principais arquivos de cabeçalho desenvolvidos no projeto são:
 * **`Analyzer.hpp`**
@@ -370,10 +484,10 @@ Os principais arquivos de cabeçalho desenvolvidos no projeto são:
 * **`HashTable.hpp`**
   Implementações customizadas de tabelas hash genérico apenas para objetos com método `addOccurrence`.
 
-**`IntIntMap.hpp`**
+* *`IntIntMap.hpp`**
   Implementação de mapa de inteiro para inteiro, utilizado para calcular distribuição por comprimento dos tokens do texto de entrada.
 
-**`Node.hpp`**
+* *`Node.hpp`**
   Implementação de nó simples genérico, contendo o dado template `T` e o ponteiro para próximo nó.
 
 * **`LinkedList.hpp`**
@@ -394,6 +508,7 @@ Os principais arquivos de cabeçalho desenvolvidos no projeto são:
 * **Arquivos de Comparadores (`ExpressionComparators.hpp`, `TokenComparators.hpp`, `MapEntryComparators.hpp`)**
   Definem critérios personalizados de comparação utilizados nos processos de ordenação e ranqueamento.
 
+---
 ### 📌 Bibliotecas Padrão do C++
 
 A seguir estão listadas as principais bibliotecas padrão do C++ utilizadas no projeto:
@@ -419,6 +534,7 @@ A seguir estão listadas as principais bibliotecas padrão do C++ utilizadas no 
 * **`cstdlib`** e **`cstring`**
   Utilizados para operações básicas de conversão e manipulação de dados em baixo nível quando necessário.
 
+---
 ## ⚙️ Estruturas de Dados e Implementação do Sistema
 Nesta seção são descritas e explicadas as classes e estruturas de dados desenvolvidas para o projeto, evidenciando seus atributos e métodos.
 
@@ -732,7 +848,7 @@ A implementação manual de algoritmos como Merge Sort e Quick Sort reforça o e
 ### 📖 Leitura de Texto e Análise Léxico-Sintática
 
 ---
-### Classe `TextReader`
+### `class TextReader`
 A classe `TextReader` encapsula o acesso ao arquivo de texto, abstraindo operações de entrada e permitindo que o analisador se concentre exclusivamente na lógica de processamento linguístico.
 Essa classe garante uma leitura controlada e segura do texto, servindo como base para toda a análise subsequente.
 
@@ -754,7 +870,7 @@ Essa classe garante uma leitura controlada e segura do texto, servindo como base
 * `getCurrentLine()`: retorna o número da linha atual.
 
 ---
-#### Classe `Analyzer`
+#### `class Analyzer`
 A classe `Analyzer` concentra toda a lógica de análise léxica, sintática e estatística do texto. Sua arquitetura foi projetada para integrar múltiplas estruturas de dados clássicas (listas, filas, pilhas, tabelas hash) em um fluxo único e coerente, permitindo tanto análise funcional do texto quanto experimentação empírica de algoritmos.
 
 **Atributos**
@@ -821,7 +937,7 @@ A classe `Analyzer` concentra toda a lógica de análise léxica, sintática e e
 ### 📜 Saídas do Algoritmo
 
 ---
-#### Classe `Report`
+#### `class Report`
 A classe `Report` é responsável pela geração dos relatórios textuais e arquivos CSV a partir dos dados processados pela classe `Analyzer`. Ela centraliza toda a lógica de formatação, ordenação e apresentação dos resultados, separando claramente a análise dos dados da apresentação dos resultados, o que melhora a modularidade e a organização do sistema.
 
 **Atributos**
@@ -986,7 +1102,8 @@ ________________________________________________________________________________
 ### Distribuição por comprimento das palavras
 A distribuição do comprimento das palavras foi obtida a partir do arquivo ``length_dist.csv`` e visualizada no gráfico apresentado abaixo, armazenado no diretório `assets`.
 ![Distribuição por comprimento](assets/length_distribution.png)
-**Distribuição por comprimento para `data/Semana_Machado_Assis.txt`**
+> **Figura 1 - Distribuição por comprimento para `data/Semana_Machado_Assis.txt`.**
+
 É notável que a maioria das palavras do texto estão com comprimento em torno de 5 caractéres, o que é aceitável para lingua portuguesa.
 ### Desempenho dos algoritmos de ordenação
 O desempenho dos algoritmos MergeSort e QuickSort foi avaliado considerando dois critérios de ordenação:
@@ -999,11 +1116,17 @@ As métricas analisadas foram:
 Os resultados estão novamente no diretório `assets`.
 #### Tempo de execução
 ![Performance tempo](assets/sort_performance_time.png)
+> **Figura 2 - Gráfico de performance em relação ao tempo.**
+
 Percebe-se que o tempo do QuickSort por frequência tem um aumento brusco para $n\approx 25000$, provavelmente resultado de pivos ruins de partição.
 #### Comparações e trocas
 ![Performance comparações](assets/sort_performance_comparisons.png)
+> **Figura 3 - Gráfico de performance em relação às comparações.**
+
 Nas comparações, nota-se que o QuickSort por frequência novamente tem um estouro de comparações em relação aos outros algoritmos, isso pode ser devido a grande quantidade de chaves com mesmo valor (palavras com a mesma frequência), o que causa esse comportamento descontrolado do QuickSort.
 ![Performance trocas](assets/sort_performance_swaps.png)
+> **Figura 4 - Gráfico de performance em relação às trocas.**
+
 No caso de trocas, ocorre o efeito contrário, pois devido a várias palavras terem a mesma frequência, o algoritmo do QuickSort consegue melhor desempenho graças a sua adaptabilidade (capacidade de melhorar o desempenho caso a estrutura já esteja parcialmente ordenada).
 ### Comparação com análise assintótica
 A análise de desempenho dos algoritmos de ordenação considerou tanto os tempos de execução observados experimentalmente quanto o comportamento assintótico esperado para cada método. Conforme definido no arquivo de `prática.pdf`, o custo teórico pode ser modelado por:
@@ -1027,8 +1150,8 @@ Usando esse $c_1$ para o MergeSort alfabético:
 |$5000$|$61440$|$0.086$|$0.096$|
 |$10000$|$132880$|$0.186$|$0.197$|
 |$24721$|$360927$|$0.505$|$0.504$|
+> **Tabela 2 - Aproximação do tempo assintótico do MergeSort alfabético.**
 
-**Tabela de aproximação do tempo assintótico do MergeSort alfabético.**
 A partir dessa tabela, nota-se que os valores de $T_{teórico}(s)$ se aproximam consideravelmente do tempo $T_{real}(s)$.
 
 Já para o QuickSort por frequência, encontra essa relação:
@@ -1037,6 +1160,7 @@ Já para o QuickSort por frequência, encontra essa relação:
 |$5000$|$3683894$|
 |$10000$|$14768827$|
 |$24721$|$91232211$|
+> **Tabela 3 - Relação do tamanho $n$ para o número de comparações do QuickSort por frequência.**
 
 E considerando o crescimento:
 * $5k \to 10k \approx 4.0$
@@ -1170,8 +1294,6 @@ Esse fluxo garante a completa reprodutibilidade dos resultados apresentados nest
 
 Os experimentos apresentados na Seção de Resultados foram executados em um ambiente controlado, utilizando um único sistema computacional, com o objetivo de garantir consistência e reprodutibilidade nas medições de desempenho dos algoritmos analisados. Todas as medições de tempo, número de comparações e número de trocas foram obtidas a partir da execução local do analisador léxico-sintático, sem concorrência de outros processos computacionalmente intensivos, buscando minimizar interferências externas nos resultados experimentais.
 
-> **Tabela 2 — Especificações do hardware utilizado nos experimentos.**
-
 |Componente|Especificação|
 |-|-|
 |Processador|AMD Ryzen 7 5700G|
@@ -1180,6 +1302,7 @@ Os experimentos apresentados na Seção de Resultados foram executados em um amb
 |Memória RAM|16GB DDR4 3200MHz|
 |Sistema Operacional|Windows 10 22H2|
 |Compilador|GCC 6.3.0|
+> **Tabela 4 - Especificações do hardware utilizado nos experimentos.**
 
 ----
 ## 👤 Autoria
