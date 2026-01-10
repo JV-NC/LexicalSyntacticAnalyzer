@@ -314,7 +314,43 @@ O funcionamento do analisador pode ser dividido em etapas sequenciais, que refle
 
 Essa separação permite o desenvolvimento e teste modular da aplicação, além de facilitar a manutenção e refatoração do código, caso necessário.
 
-**Fluxograma de execução do projeto.**
+```mermaid
+---
+config:
+  layout: fixed
+---
+flowchart TB
+    A["main - Entrada do programa"] --> B["TextReader - Inicializa com arquivo de entrada passado por parametro"]
+    B --> C["Analyzer - Inicializa com os arquivos de expressões e stopwords"]
+    C --> D["Analyzer - Inicia análise com reader"]
+    D --> E{"Existe próxima linha?"}
+    E -- Sim --> F1["Verifica se tem expressão na linha atual"]
+    F1 --> F2{"Fim do parágrafo?"}
+    F2 -- Sim --> F3["Salva parágrafo na fila de parágrafos"]
+    F3 --> E
+    F2 -- Não --> F4{"Ainda há caracteres na linha?"}
+    F4 -- Sim --> F5{"Caractere de pontuação?"}
+    F5 -- Sim --> F6["Adiciona à pilha de caracteres e verifica se tem par"]
+    F6 --> F4
+    F5 -- Não --> F7{"Caractere de palavra?"}
+    F7 -- Sim --> F8["Adiciona palavra à HashTable de parágrafo"]
+    F8 --> F4
+    F7 -- Não --> F9["Normaliza palavra atual"]
+    F9 --> F10{"É uma stopword?"}
+    F10 -- Sim --> F11{"É o fim da sentença?"}
+    F10 -- Não --> F12["Adiciona na HashTable global e de parágrafo"]
+    F12 --> F11
+    F11 -- Sim --> F13["Adiciona a sentença na fila de sentenças"]
+    F13 --> F4
+    F11 -- Não --> F4
+    F4 -- Não --> E
+    E -- Não --> G["Gerar IntIntMap para distribuição por comprimento"]
+    G --> H["Executa o benchmark de ordenação"]
+    H --> I["Report - Cria arquivo output.txt e arquivos .csv"]
+    I --> J["Scripts Python plotam os gráficos de métricas e distribuição"]
+    J --> K["Fim"]
+```
+> **Figura 1 - Fluxograma de execução do projeto.**
 
 ---
 ### 📊 Estruturas de Dados
@@ -1103,7 +1139,7 @@ ________________________________________________________________________________
 ### Distribuição por comprimento das palavras
 A distribuição do comprimento das palavras foi obtida a partir do arquivo ``length_dist.csv`` e visualizada no gráfico apresentado abaixo, armazenado no diretório `assets`.
 ![Distribuição por comprimento](assets/length_distribution.png)
-> **Figura 1 - Distribuição por comprimento para `data/Semana_Machado_Assis.txt`.**
+> **Figura 2 - Distribuição por comprimento para `data/Semana_Machado_Assis.txt`.**
 
 É notável que a maioria das palavras do texto estão com comprimento em torno de 5 caractéres, o que é aceitável para lingua portuguesa.
 ### Desempenho dos algoritmos de ordenação
@@ -1117,17 +1153,17 @@ As métricas analisadas foram:
 Os resultados estão novamente no diretório `assets`.
 #### Tempo de execução
 ![Performance tempo](assets/sort_performance_time.png)
-> **Figura 2 - Gráfico de performance em relação ao tempo.**
+> **Figura 3 - Gráfico de performance em relação ao tempo.**
 
 Percebe-se que o tempo do QuickSort por frequência tem um aumento brusco para $n\approx 25000$, provavelmente resultado de pivos ruins de partição, enquanto que os outros algoritmos de ordenação ficam próximos entre sí no valor de 0.5 segundos.
 #### Comparações e trocas
 ![Performance comparações](assets/sort_performance_comparisons.png)
-> **Figura 3 - Gráfico de performance em relação às comparações.**
+> **Figura 4 - Gráfico de performance em relação às comparações.**
 
 Nas comparações, nota-se que o QuickSort por frequência novamente tem um estouro de comparações em relação aos outros algoritmos tendo mais de 90 milhões de comparações. Isso pode ser devido a grande quantidade de chaves com mesmo valor (palavras com a mesma frequência), o que causa esse comportamento descontrolado do QuickSort.
 Enquanto que os outros algorimtos ficaram todos com menos de meio milhão de comparações.
 ![Performance trocas](assets/sort_performance_swaps.png)
-> **Figura 4 - Gráfico de performance em relação às trocas.**
+> **Figura 5 - Gráfico de performance em relação às trocas.**
 
 No caso de trocas, ocorre o efeito contrário, pois devido a várias palavras terem a mesma frequência, o algoritmo do QuickSort consegue melhor desempenho graças a sua adaptabilidade (capacidade de melhorar o desempenho caso a estrutura já esteja parcialmente ordenada).
 O QuickSort por ordem alfabética também se beneficiou da adaptabilidade.
