@@ -1118,16 +1118,18 @@ Os resultados estão novamente no diretório `assets`.
 ![Performance tempo](assets/sort_performance_time.png)
 > **Figura 2 - Gráfico de performance em relação ao tempo.**
 
-Percebe-se que o tempo do QuickSort por frequência tem um aumento brusco para $n\approx 25000$, provavelmente resultado de pivos ruins de partição.
+Percebe-se que o tempo do QuickSort por frequência tem um aumento brusco para $n\approx 25000$, provavelmente resultado de pivos ruins de partição, enquanto que os outros algoritmos de ordenação ficam próximos entre sí no valor de 0.5 segundos.
 #### Comparações e trocas
 ![Performance comparações](assets/sort_performance_comparisons.png)
 > **Figura 3 - Gráfico de performance em relação às comparações.**
 
-Nas comparações, nota-se que o QuickSort por frequência novamente tem um estouro de comparações em relação aos outros algoritmos, isso pode ser devido a grande quantidade de chaves com mesmo valor (palavras com a mesma frequência), o que causa esse comportamento descontrolado do QuickSort.
+Nas comparações, nota-se que o QuickSort por frequência novamente tem um estouro de comparações em relação aos outros algoritmos tendo mais de 90 milhões de comparações. Isso pode ser devido a grande quantidade de chaves com mesmo valor (palavras com a mesma frequência), o que causa esse comportamento descontrolado do QuickSort.
+Enquanto que os outros algorimtos ficaram todos com menos de meio milhão de comparações.
 ![Performance trocas](assets/sort_performance_swaps.png)
 > **Figura 4 - Gráfico de performance em relação às trocas.**
 
 No caso de trocas, ocorre o efeito contrário, pois devido a várias palavras terem a mesma frequência, o algoritmo do QuickSort consegue melhor desempenho graças a sua adaptabilidade (capacidade de melhorar o desempenho caso a estrutura já esteja parcialmente ordenada).
+O QuickSort por ordem alfabética também se beneficiou da adaptabilidade.
 ### Comparação com análise assintótica
 A análise de desempenho dos algoritmos de ordenação considerou tanto os tempos de execução observados experimentalmente quanto o comportamento assintótico esperado para cada método. Conforme definido no arquivo de `prática.pdf`, o custo teórico pode ser modelado por:
 $$T(n)=c_1\times nlog(n)+c_2\times n+O(1)$$
