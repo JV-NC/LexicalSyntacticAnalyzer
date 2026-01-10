@@ -1050,3 +1050,125 @@ O elevado tamanho do vocabulário distinto (24 721 palavras) confirma a riqueza 
 Quanto ao desempenho dos algoritmos de ordenação, os resultados experimentais foram analisados à luz do modelo assintótico, permitindo comparar os tempos medidos com os tempos teóricos estimados. Para o MergeSort, observou-se forte aderência ao comportamento ($O(n \log n)$) em todos os cenários, com crescimento estável do tempo de execução e boa aproximação entre valores empíricos e teóricos, evidenciando sua previsibilidade e robustez.
 Em contrapartida, o QuickSort apresentou desempenho dependente do critério de ordenação. Na ordenação alfabética, o comportamento manteve-se próximo do caso médio ($O(n \log n)$); entretanto, na ordenação por frequência, verificou-se aumento significativo no número de comparações para grandes valores de ($n$), aproximando-se do pior caso ($O(n^2)$). Esse efeito está associado à alta incidência de frequências repetidas e à ausência da estratégia de mediana de três, resultando em partições desbalanceadas.
 Dessa forma, os resultados práticos corroboram a análise assintótica clássica: o MergeSort mostrou-se mais adequado ao contexto da análise textual, caracterizado por grandes volumes de dados e muitas chaves repetidas, enquanto o QuickSort apresentou melhor desempenho em situações favoráveis, porém com maior sensibilidade à distribuição dos dados. O trabalho, portanto, atingiu seus objetivos ao integrar análise léxico-sintática, avaliação experimental de algoritmos e comparação com modelos teóricos de tempo de execução.
+## 🔧 Configuração do Ambiente
+
+Para garantir a correta compilação e execução do Analisador Léxico-Sintático, é necessário que o ambiente de desenvolvimento esteja configurado conforme as especificações a seguir.
+
+* **Sistema Operacional**:
+  Linux Ubuntu 22.04 ou 24.04 LTS (recomendado).
+  O projeto também pode ser compilado em Windows, desde que o compilador e as ferramentas estejam corretamente configurados.
+
+* **Compilador**:
+  GCC versão 13 ou superior, com suporte ao padrão **C++17**.
+
+Para verificar a versão instalada do compilador, utilize:
+
+```bash
+g++ --version
+```
+
+Caso seja necessário instalar ou atualizar o compilador e as ferramentas essenciais de build no Ubuntu, execute:
+
+```bash
+sudo apt update
+sudo apt install build-essential g++
+```
+
+* **Bibliotecas**:
+  O projeto utiliza exclusivamente a biblioteca padrão da linguagem C++. Não há dependências externas de terceiros.
+
+* **Python (opcional)**:
+  Python 3 e o `venv` são utilizados apenas para a geração dos gráficos de análise de desempenho e distribuição por comprimento, através dos scripts localizados no diretório `utils/`.
+
+---
+
+## 💻 Como Compilar e Executar
+
+O projeto utiliza um **Makefile** para padronizar os processos de compilação, execução e geração de gráficos, garantindo reprodutibilidade dos experimentos.
+### Clone o Repositório
+``` bash
+git clone https://github.com/JV-NC/LexicalSyntacticAnalyzer.git
+```
+
+### Estrutura de Entrada
+
+* **Arquivo de entrada textual**:
+  Por padrão, o sistema utiliza o arquivo:
+
+  ```
+  data/DomCasmurro.txt
+  ```
+
+  O arquivo de entrada pode ser alterado via variável `INPUT` no momento da execução, sem necessidade de modificar o código-fonte.
+
+Exemplo:
+
+```bash
+make run INPUT=data/Semana_Machado_Assis.txt
+```
+
+---
+
+### Compilação
+
+Para compilar o projeto, navegue até o diretório raiz e execute:
+
+```bash
+make clean
+make
+```
+
+* `make clean`: remove arquivos objeto (`.o`), diretórios de build e saídas anteriores, garantindo uma compilação limpa.
+* `make`: compila todos os arquivos `.cpp` presentes em `src/` e gera o executável no diretório `bin/`.
+
+---
+
+### Execução
+
+Após a compilação, o analisador pode ser executado com:
+
+```bash
+make run
+```
+
+Esse comando irá:
+
+* Executar o analisador léxico-sintático sobre o arquivo definido em `INPUT`;
+* Processar o texto, realizando tokenização, análise sintática básica e coleta de estatísticas;
+* Gerar o relatório textual no diretório `output/`, incluindo o arquivo `output.txt`.
+
+---
+
+### Geração dos Gráficos
+
+Para gerar os gráficos de **distribuição por comprimento** e **desempenho dos algoritmos de ordenação**, execute:
+
+```bash
+make plots
+```
+
+Esse comando:
+
+* Executa o analisador (caso ainda não tenha sido executado);
+* Utiliza os scripts Python em `utils/` para processar os arquivos CSV gerados;
+* Salva os gráficos no diretório `output/`.
+
+---
+
+### Execução Completa
+
+Para realizar todo o processo automaticamente (limpeza, compilação, execução e geração de gráficos), utilize:
+
+```bash
+make full
+```
+
+Esse fluxo garante a completa reprodutibilidade dos resultados apresentados neste relatório.
+
+---
+## 🖥️ Hardware Utilizado
+
+Os experimentos apresentados na Seção de Resultados foram executados em um ambiente controlado, utilizando um único sistema computacional, com o objetivo de garantir consistência e reprodutibilidade nas medições de desempenho dos algoritmos analisados. Todas as medições de tempo, número de comparações e número de trocas foram obtidas a partir da execução local do analisador léxico-sintático, sem concorrência de outros processos computacionalmente intensivos, buscando minimizar interferências externas nos resultados experimentais.
+
+> **Tabela 2 — Especificações do hardware utilizado nos experimentos.**
+---
