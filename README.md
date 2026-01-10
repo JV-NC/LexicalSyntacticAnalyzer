@@ -1171,4 +1171,49 @@ Esse fluxo garante a completa reprodutibilidade dos resultados apresentados nest
 Os experimentos apresentados na Seção de Resultados foram executados em um ambiente controlado, utilizando um único sistema computacional, com o objetivo de garantir consistência e reprodutibilidade nas medições de desempenho dos algoritmos analisados. Todas as medições de tempo, número de comparações e número de trocas foram obtidas a partir da execução local do analisador léxico-sintático, sem concorrência de outros processos computacionalmente intensivos, buscando minimizar interferências externas nos resultados experimentais.
 
 > **Tabela 2 — Especificações do hardware utilizado nos experimentos.**
+
+|Componente|Especificação|
+|-|-|
+|Processador|AMD Ryzen 7 5700G|
+|Arquitetura|x86_64|
+|Frequência Base|3.80GHz|
+|Memória RAM|16GB DDR4 3200MHz|
+|Sistema Operacional|Windows 10 22H2|
+|Compilador|GCC 6.3.0|
+
+----
+## 👤 Autoria
+
+<div align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=6366F1&center=true&vCenter=true&width=400&lines=Autor+do+Projeto;Aproveitamento+Estudos" alt="Typing SVG" />
+</div>
+
+### 🚀 Autor
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <a href="https://github.com/JV-NC">
+        <img src="https://github.com/JV-NC.png" width="120px;" alt="João Vitor Neves"/><br>
+        <sub><b>João Vitor Neves</b></sub>
+      </a><br><br>
+      <a href="https://github.com/joaovitor3105" title="GitHub">
+        <img src="https://img.shields.io/github/followers/JV-NC?label=Seguidores&style=social&logo=github" alt="GitHub - João Vitor">
+      </a>
+    </td>
+  </tr>
+</table>
+
+### 📊 Estatísticas do Repositório
+
+<div align="center">
+  <img src="https://img.shields.io/github/commit-activity/t/JV-NC/LexicalSyntacticAnalyzer?style=for-the-badge&logo=git&label=Total%20Commits" alt="Total de commits">
+  <img src="https://img.shields.io/github/languages/top/JV-NC/LexicalSyntacticAnalyzer?style=for-the-badge&logo=cplusplus" alt="Linguagem principal">
+  <img src="https://img.shields.io/github/issues-pr-closed/JV-NC/LexicalSyntacticAnalyzer?style=for-the-badge&logo=github&label=PRs%20Fechados" alt="PRs Fechados">
+  <img src="https://img.shields.io/github/license/JV-NC/LexicalSyntacticAnalyzer?style=for-the-badge&logo=open-source-initiative&label=Licença" alt="Licença do projeto">
+</div>
+
 ---
+## 📚 Referências
+
+Esta seção reúne os principais materiais teóricos, técnicos e documentais utilizados como base para o desenvolvimento do Analisador Léxico-Sintático, bem como para a análise de desempenho dos algoritmos de ordenação e a interpretação dos resultados experimentais apresentados neste trabalho.
