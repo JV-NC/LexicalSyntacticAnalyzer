@@ -239,7 +239,7 @@ A ordenação dos dados é essencial para a apresentação organizada dos result
 #### Merge Sort
 O Merge Sort é um algoritmo de ordenação baseado na estratégia "dividir para conquistar". Ele divide o vetor em partes menores, ordena cada parte e, em seguida, realiza a fusão ordenada.
 Características:
-* Complexidade do pior e melhor caso: $$O(n\;log\;n)$$
+* Complexidade do pior e melhor caso: $O(n\;log\;n)$
 * Estável
 * Custo adicional de memória para copiar o vetor.
 * Não há melhora se os elementos já estiverem parcialmente ordenados.
@@ -249,8 +249,8 @@ Características:
 #### Quick Sort
 O Quick Sort também segue a estratégia de "dividir para conquistar", escolhendo um pivô e particionando o vetor em elementos menores e maiores que ele.
 Características:
-* Complexidade média: $$O(n\;log\;n)$$
-* Pior caso: $$O(n^2)$$
+* Complexidade média: $O(n\;log\;n)$
+* Pior caso: $O(n^2)$
 * Instável, pode alterar a ordem dos elementos de mesmo valor.
 * Custo de memória extra relacionado a recursão na pilha.
 
@@ -259,13 +259,13 @@ Características:
 |Característica|**MergeSort**| **QuickSort**|
 |-|-|-|
 |**Estratégia**|Dividir  para conquistar|Dividir  para conquistar|
-|**Complexidade (Melhor Caso)**|$$O(n\;log\;n)$$|$$O(n\;log\;n)$$|
-|**Complexidade (Caso Médio)**|$$O(n\;log\;n)$$|$$O(n\;log\;n)$$|
-|**Complexidade (Pior Caso)**|$$O(n\;log\;n)$$|$$O(n^2)$$|
+|**Complexidade (Melhor Caso)**|$O(n\;log\;n)$|$O(n\;log\;n)$|
+|**Complexidade (Caso Médio)**|$O(n\;log\;n)$|$O(n\;log\;n)$|
+|**Complexidade (Pior Caso)**|$O(n\;log\;n)$|$O(n^2)$|
 |**Estabilidade**|Estável|Instável|
 |**Adapatabilidade**|Não|Sim|
-|**Memória extra**|$$O(n)$$|$$O(log\;n)$$|
-|**Movimentações (Swaps)**|$$O(n\;log\;n)$$|$$O(n\;log\;n)$$|
+|**Memória extra**|$O(n)$|$O(log\;n)$|
+|**Movimentações (Swaps)**|$O(n\;log\;n)$|$O(n\;log\;n)$|
 > **Tabela 1 - Comparativo das caracteriscas do Merge Sort e do Quick Sort.**
 
 ---
@@ -1193,13 +1193,33 @@ Usando esse $c_1$ para o MergeSort alfabético:
 
 A partir dessa tabela, nota-se que os valores de $T_{teórico}(s)$ se aproximam consideravelmente do tempo $T_{real}(s)$.
 
+Refazendo os passos acima para o QuickSort alfabético, obtém-se:
+MergeSort (ordem alfabética, $n=24721$)
+* $n=24721$
+* $T_{real} = 0.551490 \; s$ 
+* $log_2(24721)\approx 14.6$
+$$n\;log_2\;n\approx 24721\times 14.6 \approx 360927$$
+Logo:
+$$c_1 \approx \frac{T{real}}{n\; log\; n} = \frac{0.551490}{360927} \approx \boxed{1.53\times 10^{-6}}$$
+Usando esse $c_1$ para o Quicksort alfabético:
+
+|$n$|$n\; log\; n$|$T_{teórico}(s)$|$T_{real}(s)$|
+|-|-|-|-|
+|$1000$|$9966$|$0.0152$|$0.0170$|
+|$5000$|$61440$|$0.094$|$0.0944$|
+|$10000$|$132880$|$0.203$|$0.220$|
+|$24721$|$360927$|$0.552$|$0.551$|
+> **Tabela 3 - Aproximação do tempo assintótico do QuickSort alfabético.**
+
+Ao analisar a tabela, percebe-se que também foi obtido tempos práticos próximos do tempo teórico, o que confirma o tempo assintótico médio para o QuickSort alfabético sendo $O(n\;log\;n)$.
+
 Já para o QuickSort por frequência, encontra essa relação:
 |$n$|Comparações|
 |-|-|
 |$5000$|$3683894$|
 |$10000$|$14768827$|
 |$24721$|$91232211$|
-> **Tabela 3 - Relação do tamanho $n$ para o número de comparações do QuickSort por frequência.**
+> **Tabela 4 - Relação do tamanho $n$ para o número de comparações do QuickSort por frequência.**
 
 E considerando o crescimento:
 * $5k \to 10k \approx 4.0$
@@ -1341,7 +1361,7 @@ Os experimentos apresentados na Seção de Resultados foram executados em um amb
 |Memória RAM|16GB DDR4 3200MHz|
 |Sistema Operacional|Windows 10 22H2|
 |Compilador|GCC 6.3.0|
-> **Tabela 4 - Especificações do hardware utilizado nos experimentos.**
+> **Tabela 5 - Especificações do hardware utilizado nos experimentos.**
 
 ---
 ## 💻 Como Criar a Documentação Doxygen
@@ -1391,3 +1411,7 @@ A página inicial pode ser acessada pelo arquivo `html/index.html` gerado.
 ## 📚 Referências
 
 Esta seção reúne os principais materiais teóricos, técnicos e documentais utilizados como base para o desenvolvimento do Analisador Léxico-Sintático, bem como para a análise de desempenho dos algoritmos de ordenação e a interpretação dos resultados experimentais apresentados neste trabalho.
+* GEEKSFORGEEKS. Passing a Function as a Parameter in C++. Disponível em: <https://www.geeksforgeeks.org/cpp/passing-a-function-as-a-parameter-in-cpp/>. Acesso em: 10 jan. 2026.
+* GEEKSFORGEEKS. Generics in C++. Disponível em: <https://www.geeksforgeeks.org/cpp/generics-in-c/>.
+* EMOJIPEDIA. 📙 Emojipedia — 😃 Home of Emoji Meanings 💁👌🎍😍. Disponível em: <https://emojipedia.org/>.
+* markdown-badges. Disponível em: <https://ileriayo.github.io/markdown-badges/>. Acesso em: 10 jan. 2026.
